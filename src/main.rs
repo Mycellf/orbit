@@ -25,7 +25,7 @@ async fn main() {
             entity::ArmorRing::from_size(vector![4.0, 1.0], 2, 4, 3.5, PI / 6.0),
             //
         ],
-        entity::Controller::Player {
+        Some(entity::Controller::Player {
             speed: 24.0,
             x_control: input::InputAxis::from_inputs(
                 vec![KeyCode::D.into(), KeyCode::Right.into()],
@@ -35,7 +35,7 @@ async fn main() {
                 vec![KeyCode::S.into(), KeyCode::Down.into()],
                 vec![KeyCode::W.into(), KeyCode::Up.into()],
             ),
-        },
+        }),
     ));
 
     show_mouse(false);

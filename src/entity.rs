@@ -9,7 +9,7 @@ pub struct Entity {
     pub center: Center,
     pub position: Point2<f32>,
     pub color: Color,
-    pub controller: Controller,
+    pub controller: Option<Controller>,
 }
 
 impl Entity {
@@ -18,7 +18,7 @@ impl Entity {
         color: Color,
         center: Center,
         rings: Vec<ArmorRing>,
-        controller: Controller,
+        controller: Option<Controller>,
     ) -> Self {
         Self {
             rings,
@@ -157,8 +157,8 @@ pub enum Controller {
 }
 
 impl Controller {
-    pub fn update(entity: &mut Entity, delta_seconds: f32) {
-        let controller = &mut entity.controller;
+    pub fn update(entity: &mut Entity, delta_seconds: f32) -> Option<()> {
+        let controller = &mut entity.controller?;
         match controller {
             Self::Player {
                 speed,
@@ -172,5 +172,6 @@ impl Controller {
                     vector![x_control.as_f32(), y_control.as_f32()] * (*speed * delta_seconds);
             }
         }
+        Some(())
     }
 }
