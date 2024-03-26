@@ -158,7 +158,7 @@ pub enum Controller {
 
 impl Controller {
     pub fn update(entity: &mut Entity, delta_seconds: f32) -> Option<()> {
-        let controller = &mut entity.controller?;
+        let controller = entity.controller.as_mut()?;
         match controller {
             Self::Player {
                 speed,
