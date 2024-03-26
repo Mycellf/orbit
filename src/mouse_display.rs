@@ -2,12 +2,12 @@ use macroquad::prelude::*;
 use nalgebra::{point, Point2};
 
 pub struct MouseDisplay {
-    radius: f32,
-    center_angle: f32,
-    center_speed: f32,
-    ring_angle: f32,
-    ring_speed: f32,
-    position: Point2<f32>,
+    pub radius: f32,
+    pub center_angle: f32,
+    pub center_speed: f32,
+    pub ring_angle: f32,
+    pub ring_speed: f32,
+    pub position: Point2<f32>,
 }
 
 impl MouseDisplay {

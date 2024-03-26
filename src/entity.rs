@@ -1,5 +1,6 @@
+use crate::app::App;
 use macroquad::prelude::*;
-use nalgebra::{vector, Point2, Vector2};
+use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
 use std::num::NonZeroU8;
 
 use crate::input::InputAxis;
@@ -8,7 +9,7 @@ pub struct Entity {
     pub rings: Vec<ArmorRing>,
     pub center: Center,
     pub position: Point2<f32>,
-    pub aim: Option<f32>,
+    pub aim: Option<UnitComplex<f32>>,
     pub radius: f32,
     pub color: Color,
     pub controller: Option<Controller>,
@@ -22,7 +23,7 @@ impl Entity {
         rings: Vec<ArmorRing>,
         controller: Option<Controller>,
     ) -> Self {
-        let aim = Some(0.0);
+        let aim = None;
         let radius = Self::get_radius_of(&rings, &center);
         Self {
             rings,
@@ -45,41 +46,39 @@ impl Entity {
 
         if let Some(aim) = self.aim {
             let radius = self.radius + 4.0;
-            let cos = aim.cos();
-            let sin = aim.sin();
 
             draw_rectangle_ex(
-                self.position.x + radius * cos,
-                self.position.y + radius * sin,
+                self.position.x + radius * aim.re,
+                self.position.y + radius * aim.im,
                 2.0,
                 0.75,
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
-                    rotation: aim + PI / 4.0,
+                    rotation: aim.angle() + PI / 4.0,
                     color: self.color,
                 },
             );
             draw_rectangle_ex(
-                self.position.x + radius * cos,
-                self.position.y + radius * sin,
+                self.position.x + radius * aim.re,
+                self.position.y + radius * aim.im,
                 0.75,
                 2.0,
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
-                    rotation: aim + PI / 4.0,
+                    rotation: aim.angle() + PI / 4.0,
                     color: self.color,
                 },
             );
         }
     }
 
-    pub fn update(&mut self, delta_seconds: f32) {
+    pub fn update(&mut self, delta_seconds: f32, app: &mut App) {
         self.center.update_angle(delta_seconds);
         for ring in &mut *self.rings {
             ring.update_angle(delta_seconds);
         }
 
-        Controller::update(self, delta_seconds);
+        Controller::update(self, delta_seconds, app);
     }
 
     pub fn get_full_radius(&self) -> f32 {
@@ -217,7 +216,7 @@ pub enum Controller {
 }
 
 impl Controller {
-    pub fn update(entity: &mut Entity, delta_seconds: f32) -> Option<()> {
+    pub fn update(entity: &mut Entity, delta_seconds: f32, app: &mut App) -> Option<()> {
         let controller = entity.controller.as_mut()?;
         match controller {
             Self::Player {
@@ -225,6 +224,10 @@ impl Controller {
                 x_control,
                 y_control,
             } => {
+                let aim = app.mouse.position - entity.position;
+                let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
+                entity.aim = Some(aim);
+
                 x_control.update_state();
                 y_control.update_state();
 
