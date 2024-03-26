@@ -4,6 +4,7 @@ use nalgebra::{point, vector};
 pub mod app;
 pub mod entity;
 pub mod input;
+pub mod mouse_display;
 
 fn window_conf() -> Conf {
     Conf {
