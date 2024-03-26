@@ -8,7 +8,7 @@ pub mod input;
 fn window_conf() -> Conf {
     Conf {
         window_title: "Orbit Strike".to_owned(),
-        // fullscreen: true,
+        fullscreen: true,
         ..Default::default()
     }
 }
@@ -25,8 +25,20 @@ async fn main() {
             entity::ArmorRing::from_size(vector![4.0, 1.0], 2, 4, 3.5, PI / 6.0),
             //
         ],
-        entity::Controller::Player { speed: 24.0 },
+        entity::Controller::Player {
+            speed: 24.0,
+            x_control: input::InputAxis::from_inputs(
+                vec![KeyCode::D.into(), KeyCode::Right.into()],
+                vec![KeyCode::A.into(), KeyCode::Left.into()],
+            ),
+            y_control: input::InputAxis::from_inputs(
+                vec![KeyCode::S.into(), KeyCode::Down.into()],
+                vec![KeyCode::W.into(), KeyCode::Up.into()],
+            ),
+        },
     ));
+
+    show_mouse(false);
 
     loop {
         app.update();

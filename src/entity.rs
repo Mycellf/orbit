@@ -1,6 +1,8 @@
 use macroquad::prelude::*;
-use nalgebra::{Point2, Vector2};
+use nalgebra::{vector, Point2, Vector2};
 use std::num::NonZeroU8;
+
+use crate::input::InputAxis;
 
 pub struct Entity {
     pub rings: Vec<ArmorRing>,
@@ -147,14 +149,28 @@ impl Center {
 
 #[derive(Clone, Debug)]
 pub enum Controller {
-    Player { speed: f32 },
+    Player {
+        speed: f32,
+        x_control: InputAxis,
+        y_control: InputAxis,
+    },
 }
 
 impl Controller {
     pub fn update(entity: &mut Entity, delta_seconds: f32) {
         let controller = &mut entity.controller;
         match controller {
-            Self::Player { speed } => {}
+            Self::Player {
+                speed,
+                x_control,
+                y_control,
+            } => {
+                x_control.update_state();
+                y_control.update_state();
+
+                entity.position +=
+                    vector![x_control.as_f32(), y_control.as_f32()] * (*speed * delta_seconds);
+            }
         }
     }
 }
