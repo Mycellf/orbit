@@ -23,7 +23,8 @@ async fn main() {
         Color::from_hex(0x0000ff),
         entity::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
         vec![
-            entity::ArmorRing::from_size(vector![4.0, 1.0], 2, 4, 3.5, PI / 6.0),
+            entity::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
+            entity::ArmorRing::from_size(vector![1.0, 2.0], 2, 4, 6.5, -PI / 12.0),
             //
         ],
         Some(entity::Controller::Player {

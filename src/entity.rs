@@ -22,7 +22,7 @@ impl Entity {
         rings: Vec<ArmorRing>,
         controller: Option<Controller>,
     ) -> Self {
-        let aim = None;
+        let aim = Some(0.0);
         let radius = Self::get_radius_of(&rings, &center);
         Self {
             rings,
@@ -36,9 +36,40 @@ impl Entity {
     }
 
     pub fn draw(&self) {
+        use std::f32::consts::PI;
+
         self.center.draw_around(self.position, WHITE);
         for ring in &*self.rings {
             ring.draw_around(self.position, self.color);
+        }
+
+        if let Some(aim) = self.aim {
+            let radius = self.radius + 4.0;
+            let cos = aim.cos();
+            let sin = aim.sin();
+
+            draw_rectangle_ex(
+                self.position.x + radius * cos,
+                self.position.y + radius * sin,
+                2.0,
+                0.75,
+                DrawRectangleParams {
+                    offset: vec2(1.0, 0.0),
+                    rotation: aim + PI / 4.0,
+                    color: self.color,
+                },
+            );
+            draw_rectangle_ex(
+                self.position.x + radius * cos,
+                self.position.y + radius * sin,
+                0.75,
+                2.0,
+                DrawRectangleParams {
+                    offset: vec2(1.0, 0.0),
+                    rotation: aim + PI / 4.0,
+                    color: self.color,
+                },
+            );
         }
     }
 
