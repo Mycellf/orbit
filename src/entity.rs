@@ -60,7 +60,7 @@ impl Entity {
             .into_iter()
             .map(|r| r.get_full_radius())
             .max_by(|x, y| x.partial_cmp(y).unwrap())
-            .unwrap_or_else(|| center.size.x.max(center.size.y))
+            .unwrap_or_else(|| center.size.x.max(center.size.y) / 2.0)
     }
 }
 
