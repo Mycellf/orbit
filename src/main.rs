@@ -24,8 +24,7 @@ async fn main() {
         entity::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
         vec![
             entity::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
-            entity::ArmorRing::from_size(vector![1.0, 2.0], 2, 4, 6.5, -PI / 12.0),
-            //
+            // *A gift to the auto formatter to keep it from messing this code up*
         ],
         Some(entity::Controller::Player {
             speed: 24.0,
