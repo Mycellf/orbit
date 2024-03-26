@@ -29,6 +29,9 @@ impl InputAxis {
 
     fn update(input: bool, to_update: &mut AxisState, other: &mut AxisState) {
         match (input, *to_update, *other) {
+            (true, AxisState::Pressed, AxisState::Off) => {
+                *to_update = AxisState::Active;
+            }
             (true, AxisState::Off, AxisState::Active) => {
                 *to_update = AxisState::Active;
                 *other = AxisState::Pressed;
