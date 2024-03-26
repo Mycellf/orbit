@@ -8,6 +8,8 @@ pub struct Entity {
     pub rings: Vec<ArmorRing>,
     pub center: Center,
     pub position: Point2<f32>,
+    pub aim: Option<f32>,
+    pub radius: f32,
     pub color: Color,
     pub controller: Option<Controller>,
 }
@@ -20,10 +22,14 @@ impl Entity {
         rings: Vec<ArmorRing>,
         controller: Option<Controller>,
     ) -> Self {
+        let aim = None;
+        let radius = Self::get_radius_of(&rings, &center);
         Self {
             rings,
             center,
             position,
+            aim,
+            radius,
             color,
             controller,
         }
@@ -43,6 +49,18 @@ impl Entity {
         }
 
         Controller::update(self, delta_seconds);
+    }
+
+    pub fn get_full_radius(&self) -> f32 {
+        Self::get_radius_of(&self.rings, &self.center)
+    }
+
+    fn get_radius_of(rings: &Vec<ArmorRing>, center: &Center) -> f32 {
+        rings
+            .into_iter()
+            .map(|r| r.get_full_radius())
+            .max_by(|x, y| x.partial_cmp(y).unwrap())
+            .unwrap_or_else(|| center.size.x.max(center.size.y))
     }
 }
 
@@ -100,8 +118,19 @@ impl ArmorRing {
         self.angle += self.speed * delta_seconds;
         self.angle %= 2.0 * PI;
     }
+
+    pub fn get_full_radius(&self) -> f32 {
+        let max_height = (&self.armor)
+            .into_iter()
+            .filter_map(|&a| a)
+            .map(|a| a.size.y)
+            .max_by(|x, y| x.partial_cmp(y).unwrap())
+            .unwrap_or(0.0);
+        max_height + self.radius
+    }
 }
 
+#[derive(Clone, Copy, Debug)]
 pub struct Armor {
     pub size: Vector2<f32>,
     pub health: NonZeroU8,
