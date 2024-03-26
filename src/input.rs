@@ -1,5 +1,69 @@
 use macroquad::prelude::*;
 
+#[derive(Clone, Debug)]
+pub struct InputAxis {
+    pub positive: (Vec<InputButton>, AxisState),
+    pub negative: (Vec<InputButton>, AxisState),
+}
+
+impl InputAxis {
+    pub fn from_inputs(positive: Vec<InputButton>, negative: Vec<InputButton>) -> Self {
+        let positive = (positive, AxisState::Off);
+        let negative = (negative, AxisState::Off);
+        Self { positive, negative }
+    }
+
+    pub fn update_state(&mut self) {
+        Self::update(
+            (&self.positive.0).into_iter().any(|b| b.is_down()),
+            &mut self.positive.1,
+            &mut self.negative.1,
+        );
+
+        Self::update(
+            (&self.negative.0).into_iter().any(|b| b.is_down()),
+            &mut self.negative.1,
+            &mut self.positive.1,
+        );
+    }
+
+    fn update(input: bool, to_update: &mut AxisState, other: &mut AxisState) {
+        match (input, *to_update, *other) {
+            (true, AxisState::Off, AxisState::Active) => {
+                *to_update = AxisState::Active;
+                *other = AxisState::Pressed;
+            }
+            (true, AxisState::Off, _) => {
+                *to_update = AxisState::Active;
+            }
+            (false, AxisState::Off, _) => {}
+            (false, _, _) => {
+                *to_update = AxisState::Off;
+            }
+            _ => {}
+        }
+    }
+
+    pub fn as_i8(&self) -> i8 {
+        match (self.positive.1, self.negative.1) {
+            (AxisState::Active, _) => 1,
+            (_, AxisState::Active) => -1,
+            _ => 0,
+        }
+    }
+
+    pub fn as_f32(&self) -> f32 {
+        self.as_i8() as f32
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum AxisState {
+    Off,
+    Active,
+    Pressed,
+}
+
 #[derive(Clone, Copy, Debug)]
 pub enum InputButton {
     Keyboard(KeyCode),
