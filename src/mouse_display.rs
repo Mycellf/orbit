@@ -35,7 +35,7 @@ impl MouseDisplay {
         use std::f32::consts::PI;
         self.center_angle += self.center_speed * delta_seconds;
         self.center_angle %= PI / 2.0;
-        self.ring_angle += self.ring_speed * delta_seconds;
+        self.ring_angle += self.ring_speed * (self.radius + 1.0) * delta_seconds;
         self.ring_angle %= PI / 2.0;
 
         if is_key_down(KeyCode::Space) {
