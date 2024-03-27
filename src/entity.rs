@@ -242,9 +242,10 @@ impl Controller {
                     *cooldown -= delta_seconds;
                 }
                 if *cooldown <= 0.0 && shoot_control.into_iter().any(|b| b.is_down()) {
-                    *cooldown = 1.0;
+                    *cooldown = 0.5;
                     app.projectiles.push(Projectile::from_speed(
                         48.0,
+                        50.0,
                         aim,
                         entity.position + displacement_from_angle(aim, entity.radius + 6.0),
                         vector![1.0, 4.0],
