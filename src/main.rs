@@ -37,6 +37,11 @@ async fn main() {
                 vec![KeyCode::S.into(), KeyCode::Down.into()],
                 vec![KeyCode::W.into(), KeyCode::Up.into()],
             ),
+            shoot_control: vec![
+                input::InputButton::Mouse(MouseButton::Left),
+                input::InputButton::Keyboard(KeyCode::Space),
+            ],
+            cooldown: 0.0,
         }),
     ));
 

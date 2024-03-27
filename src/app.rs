@@ -44,6 +44,10 @@ impl App {
             entity.draw();
         }
 
+        for projectile in &self.projectiles {
+            projectile.draw();
+        }
+
         self.mouse.draw();
     }
 
@@ -66,6 +70,18 @@ impl App {
             let app = &mut *(self as *mut App); // Nececary due to the borrow checker
             for entity in &mut self.entities {
                 entity.update(self.timestep_length, app);
+            }
+
+            let mut deleted_projectiles = Vec::new();
+            for (index, projectile) in (&mut self.projectiles).into_iter().enumerate() {
+                let remove = projectile.update(self.timestep_length, app).is_none();
+                if remove {
+                    deleted_projectiles.push(index);
+                }
+            }
+
+            for &i in (&deleted_projectiles).into_iter().rev() {
+                self.projectiles.swap_remove(i);
             }
         }
 

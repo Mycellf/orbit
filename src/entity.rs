@@ -1,4 +1,4 @@
-use crate::app::App;
+use crate::{app::App, input::InputButton, projectile::Projectile};
 use macroquad::prelude::*;
 use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
 use std::num::NonZeroU8;
@@ -212,6 +212,8 @@ pub enum Controller {
         speed: f32,
         x_control: InputAxis,
         y_control: InputAxis,
+        shoot_control: Vec<InputButton>,
+        cooldown: f32,
     },
 }
 
@@ -223,6 +225,8 @@ impl Controller {
                 speed,
                 x_control,
                 y_control,
+                shoot_control,
+                cooldown,
             } => {
                 let aim = app.mouse.position - entity.position;
                 let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
@@ -233,8 +237,27 @@ impl Controller {
 
                 entity.position +=
                     vector![x_control.as_f32(), y_control.as_f32()] * (*speed * delta_seconds);
+
+                if *cooldown > 0.0 {
+                    *cooldown -= delta_seconds;
+                }
+                if *cooldown <= 0.0 && shoot_control.into_iter().any(|b| b.is_down()) {
+                    *cooldown = 1.0;
+                    app.projectiles.push(Projectile::from_speed(
+                        48.0,
+                        aim,
+                        entity.position + displacement_from_angle(aim, entity.radius + 6.0),
+                        vector![1.0, 4.0],
+                        2.0,
+                        Color::from_hex(0x0000ff),
+                    ));
+                }
             }
         }
         Some(())
     }
+}
+
+fn displacement_from_angle(angle: UnitComplex<f32>, distance: f32) -> Vector2<f32> {
+    vector![angle.re, angle.im] * distance
 }
