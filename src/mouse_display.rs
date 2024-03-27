@@ -37,16 +37,6 @@ impl MouseDisplay {
         self.center_angle %= PI / 2.0;
         self.ring_angle += self.ring_speed * delta_seconds;
         self.ring_angle %= PI / 2.0;
-
-        if is_key_down(KeyCode::Space) {
-            self.radius += delta_seconds * 2.0;
-        } else {
-            self.radius -= delta_seconds;
-        }
-
-        if self.radius < 0.0 {
-            self.radius = 0.0;
-        }
     }
 
     pub fn draw(&self) {

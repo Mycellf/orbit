@@ -1,5 +1,4 @@
-use crate::entity::Entity;
-use crate::mouse_display::MouseDisplay;
+use crate::{entity::Entity, mouse_display::MouseDisplay, projectile::Projectile};
 use macroquad::prelude::*;
 use std::time::Instant;
 
@@ -9,6 +8,7 @@ pub struct App {
     pub last_frame: Instant,
     pub camera: Camera2D,
     pub entities: Vec<Entity>,
+    pub projectiles: Vec<Projectile>,
     pub mouse: MouseDisplay,
 }
 
@@ -23,6 +23,7 @@ impl App {
             ..Default::default()
         };
         let entities = Vec::new();
+        let projectiles = Vec::new();
         let mouse = MouseDisplay::from_speed(-PI / 3.0, PI / 6.0);
         Self {
             timestep_length,
@@ -30,6 +31,7 @@ impl App {
             last_frame,
             camera,
             entities,
+            projectiles,
             mouse,
         }
     }
