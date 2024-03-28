@@ -84,7 +84,9 @@ impl InputButton {
     pub fn is_down(self) -> bool {
         match self {
             Self::Keyboard(key_code) => is_key_down(key_code),
-            Self::Mouse(mouse_button) => is_mouse_button_down(mouse_button),
+            Self::Mouse(mouse_button) => {
+                is_mouse_button_down(mouse_button) || is_mouse_button_pressed(mouse_button)
+            }
         }
     }
 
