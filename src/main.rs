@@ -47,7 +47,7 @@ async fn main() {
     app.entities.push(entity::Entity::from_rings(
         point![32.0, 16.0],
         Color::from_hex(0xff0000),
-        entity::Center::from_size(vector![2.0, 3.0], 8, PI / 3.0),
+        entity::Center::from_size(vector![2.0, 2.0], 8, PI / 3.0),
         vec![
             entity::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
             entity::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
