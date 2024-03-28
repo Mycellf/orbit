@@ -255,6 +255,13 @@ impl Controller {
                         Color::from_hex(0x0000ff),
                     ));
                 }
+
+                // Sync Mouse
+                use std::f32::consts::PI;
+                if let Some(ring) = entity.rings.get(0) {
+                    app.mouse.ring_angle = ring.angle - PI * 3.0 / 4.0;
+                    app.mouse.set_active_from_ring(ring);
+                }
             }
         }
         Some(())

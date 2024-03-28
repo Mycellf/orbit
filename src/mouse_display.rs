@@ -8,6 +8,7 @@ pub struct MouseDisplay {
     pub ring_angle: f32,
     pub ring_speed: f32,
     pub position: Point2<f32>,
+    pub active_corners: u8,
 }
 
 impl MouseDisplay {
@@ -16,6 +17,7 @@ impl MouseDisplay {
         let center_angle = 0.0;
         let ring_angle = 0.0;
         let position = point![0.0, 0.0];
+        let active_corners = 0xf;
         Self {
             radius,
             center_angle,
@@ -23,6 +25,7 @@ impl MouseDisplay {
             ring_angle,
             ring_speed,
             position,
+            active_corners,
         }
     }
 
@@ -31,12 +34,16 @@ impl MouseDisplay {
         self.position = position.into();
     }
 
-    pub fn update(&mut self, delta_seconds: f32) {
-        use std::f32::consts::PI;
-        self.center_angle += self.center_speed * delta_seconds;
-        self.center_angle %= PI / 2.0;
-        self.ring_angle += self.ring_speed * delta_seconds;
-        self.ring_angle %= PI / 2.0;
+    pub fn update(&mut self, delta_seconds: f32) {}
+
+    pub fn set_active_from_ring(&mut self, ring: &crate::entity::ArmorRing) {
+        self.active_corners = 0;
+        for armor in &ring.armor {
+            self.active_corners <<= 1;
+            if armor.is_some() {
+                self.active_corners |= 1;
+            }
+        }
     }
 
     pub fn draw(&self) {
@@ -57,18 +64,23 @@ impl MouseDisplay {
         let cos = (self.ring_angle + PI / 4.0).cos();
         let sin = (self.ring_angle + PI / 4.0).sin();
         let radius = self.radius + 0.5;
-        for (x, y) in get_rotations_of(cos * radius, sin * radius) {
-            draw_rectangle_ex(
-                self.position.x + x,
-                self.position.y + y,
-                1.0,
-                1.0,
-                DrawRectangleParams {
-                    offset: vec2(0.5, 0.5),
-                    rotation: self.ring_angle,
-                    color: Color::from_hex(0x0000ff),
-                },
-            );
+        for (i, (x, y)) in get_rotations_of(cos * radius, sin * radius)
+            .into_iter()
+            .enumerate()
+        {
+            if (self.active_corners >> i) & 1 > 0 {
+                draw_rectangle_ex(
+                    self.position.x + x,
+                    self.position.y + y,
+                    1.0,
+                    1.0,
+                    DrawRectangleParams {
+                        offset: vec2(0.5, 0.5),
+                        rotation: self.ring_angle,
+                        color: Color::from_hex(0x0000ff),
+                    },
+                );
+            }
         }
     }
 }
