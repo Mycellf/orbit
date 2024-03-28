@@ -228,16 +228,18 @@ impl Controller {
                 shoot_control,
                 cooldown,
             } => {
+                // Mouse aim
                 let aim = app.mouse.position - entity.position;
                 let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
                 entity.aim = Some(aim);
 
+                // Motion
                 x_control.update_state();
                 y_control.update_state();
-
                 entity.position +=
                     vector![x_control.as_f32(), y_control.as_f32()] * (*speed * delta_seconds);
 
+                // Shooting
                 if *cooldown > 0.0 {
                     *cooldown -= delta_seconds;
                 }
