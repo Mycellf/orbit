@@ -9,7 +9,7 @@ pub mod projectile;
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Orbit Strike".to_owned(),
+        window_title: "Orbit".to_owned(),
         fullscreen: true,
         ..Default::default()
     }
