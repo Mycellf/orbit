@@ -6,6 +6,7 @@ use crate::{
 use macroquad::prelude::*;
 use nalgebra::{Point2, UnitComplex};
 
+#[derive(Clone, Debug)]
 pub struct Entity {
     pub rings: Vec<ArmorRing>,
     pub center: Center,

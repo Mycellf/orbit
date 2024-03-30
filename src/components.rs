@@ -3,6 +3,7 @@ use macroquad::prelude::*;
 use nalgebra::{vector, Point2, UnitComplex, Vector2};
 use std::num::NonZeroU16;
 
+#[derive(Clone, Debug)]
 pub struct ArmorRing {
     pub armor: Vec<Option<Armor>>,
     pub radius: f32,
@@ -120,6 +121,7 @@ impl Armor {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
 pub struct Center {
     pub size: Vector2<f32>,
     pub health: NonZeroU16,
