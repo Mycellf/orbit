@@ -25,7 +25,7 @@ impl Entity {
         controller: Option<Controller>,
     ) -> Self {
         let aim = None;
-        let radius = Self::get_radius_of(&rings, &center);
+        let radius = Self::get_radius_squared(&rings, &center).sqrt();
         Self {
             rings,
             center,
@@ -83,14 +83,14 @@ impl Entity {
     }
 
     pub fn get_full_radius(&self) -> f32 {
-        Self::get_radius_of(&self.rings, &self.center)
+        Self::get_radius_squared(&self.rings, &self.center).sqrt()
     }
 
-    fn get_radius_of(rings: &Vec<ArmorRing>, center: &Center) -> f32 {
+    fn get_radius_squared(rings: &Vec<ArmorRing>, center: &Center) -> f32 {
         rings
             .into_iter()
-            .map(|r| r.get_full_radius())
+            .map(|r| r.get_full_radius_squared())
             .max_by(|x, y| x.partial_cmp(y).unwrap())
-            .unwrap_or_else(|| center.size.x.max(center.size.y) / 2.0)
+            .unwrap_or_else(|| center.get_radius_squared())
     }
 }

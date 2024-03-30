@@ -35,9 +35,10 @@ impl ArmorRing {
 
         for armor in &self.armor {
             if let Some(Armor { size, .. }) = armor {
+                let angle_complex = UnitComplex::new(angle);
                 draw_rectangle_ex(
-                    position.x + self.radius * angle.cos(),
-                    position.y + self.radius * angle.sin(),
+                    position.x + self.radius * angle_complex.re,
+                    position.y + self.radius * angle_complex.im,
                     size.y,
                     size.x,
                     DrawRectangleParams {
@@ -57,14 +58,13 @@ impl ArmorRing {
         self.angle %= 2.0 * PI;
     }
 
-    pub fn get_full_radius(&self) -> f32 {
-        let max_height = (&self.armor)
+    pub fn get_full_radius_squared(&self) -> f32 {
+        (&self.armor)
             .into_iter()
             .filter_map(|&a| a)
-            .map(|a| a.size.y)
+            .map(|a| a.get_radius_squared(self.radius))
             .max_by(|x, y| x.partial_cmp(y).unwrap())
-            .unwrap_or(0.0);
-        max_height + self.radius
+            .unwrap_or(0.0)
     }
 
     pub fn get_increment(&self) -> f32 {
@@ -113,6 +113,11 @@ impl Armor {
             }
         }
     }
+
+    pub fn get_radius_squared(&self, radius: f32) -> f32 {
+        let height = self.size.y + radius;
+        height * height + self.size.x * self.size.x / 4.0
+    }
 }
 
 pub struct Center {
@@ -152,6 +157,10 @@ impl Center {
         use std::f32::consts::PI;
         self.angle += self.speed * delta_seconds;
         self.angle %= 2.0 * PI;
+    }
+
+    pub fn get_radius_squared(&self) -> f32 {
+        (self.size.x * self.size.x + self.size.y * self.size.y) / 4.0
     }
 
     pub fn get_collider(&self, position: Point2<f32>) -> Rectangle {

@@ -62,7 +62,7 @@ impl Controller {
                         48.0,
                         50.0,
                         nudged_aim,
-                        entity.position + displacement_from_angle(nudged_aim, entity.radius + 6.0),
+                        entity.position + displacement_from_angle(nudged_aim, entity.radius + 4.0),
                         vector![1.0, 4.0],
                         2.0,
                         Color::from_hex(0x0000ff),
@@ -91,7 +91,7 @@ impl Controller {
                     app.mouse.active_corners = 0;
                 }
                 app.mouse.radius = (*shooting_speed - 1.0)
-                    * (length(entity.position - app.mouse.position) - entity.radius - 6.0)
+                    * (length(entity.position - app.mouse.position) - entity.radius - 4.0)
                     * 0.125;
                 app.mouse.radius = app.mouse.radius.max(0.0);
             }
