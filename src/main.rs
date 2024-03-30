@@ -28,7 +28,7 @@ async fn main() {
             // *A gift to the auto formatter to keep it from messing this code up*
         ],
         Some(entity::Controller::Player {
-            speed: 24.0,
+            speed: 36.0,
             x_control: input::InputAxis::from_inputs(
                 vec![KeyCode::D.into(), KeyCode::Right.into()],
                 vec![KeyCode::A.into(), KeyCode::Left.into()],
