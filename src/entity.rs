@@ -290,7 +290,9 @@ impl Controller {
                     app.projectiles.push(Projectile::from_speed(
                         48.0,
                         50.0,
-                        aim,
+                        UnitComplex::new(
+                            aim.angle() + rand::gen_range(-0.1, 0.1) * (*shooting_speed - 1.0),
+                        ),
                         entity.position + displacement_from_angle(aim, entity.radius + 6.0),
                         vector![1.0, 4.0],
                         2.0,
@@ -319,6 +321,10 @@ impl Controller {
                 } else {
                     app.mouse.active_corners = 0;
                 }
+                app.mouse.radius = (*shooting_speed - 1.0)
+                    * (length(entity.position - app.mouse.position) - entity.radius - 6.0)
+                    * 0.125;
+                app.mouse.radius = app.mouse.radius.max(0.0);
             }
         }
         Some(())
@@ -327,4 +333,8 @@ impl Controller {
 
 fn displacement_from_angle(angle: UnitComplex<f32>, distance: f32) -> Vector2<f32> {
     vector![angle.re, angle.im] * distance
+}
+
+fn length(vector: Vector2<f32>) -> f32 {
+    (vector.x * vector.x + vector.y * vector.y).sqrt()
 }
