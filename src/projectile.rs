@@ -86,7 +86,7 @@ impl Projectile {
     }
 
     /// Note that this factors in the speed of the projectile to make its hitbox longer. To
-    /// disable this, set `delta_seconds` to 0.0.
+    /// disable this, pass 0.0 to `delta_seconds`.
     pub fn get_collider(&self, delta_seconds: f32) -> Rectangle {
         Rectangle::from_dimensions(
             self.position,
