@@ -88,12 +88,14 @@ impl Controller {
                     app.mouse.ring_angle = ring.angle - PI * 3.0 / 4.0;
                     app.mouse.set_active_from_ring(ring);
                 } else {
+                    app.mouse.ring_angle = entity.center.angle / -2.0 - (PI * 3.0 / 4.0);
                     app.mouse.active_corners = 0;
                 }
                 app.mouse.radius = (*shooting_speed - 1.0)
                     * (length(entity.position - app.mouse.position) - entity.radius - 4.0)
                     * 0.125;
                 app.mouse.radius = app.mouse.radius.max(0.0);
+                app.mouse.color = entity.color;
             }
         }
         Some(())

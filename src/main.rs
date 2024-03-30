@@ -58,6 +58,7 @@ async fn main() {
         ],
         None,
     ));
+    app.entities[0].rings[0].armor[0] = None;
 
     show_mouse(false);
 
