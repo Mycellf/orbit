@@ -42,6 +42,7 @@ async fn main() {
                 input::InputButton::Keyboard(KeyCode::Space),
             ],
             cooldown: 0.0,
+            shooting_speed: 1.0,
         }),
     ));
     app.entities.push(entity::Entity::from_rings(

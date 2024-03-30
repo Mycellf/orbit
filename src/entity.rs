@@ -247,6 +247,7 @@ pub enum Controller {
         y_control: InputAxis,
         shoot_control: Vec<InputButton>,
         cooldown: f32,
+        shooting_speed: f32,
     },
 }
 
@@ -260,6 +261,7 @@ impl Controller {
                 y_control,
                 shoot_control,
                 cooldown,
+                shooting_speed,
             } => {
                 // Mouse aim
                 let aim = app.mouse.position - entity.position;
@@ -278,11 +280,13 @@ impl Controller {
                 entity.position += input * (*speed * delta_seconds);
 
                 // Shooting
+                let shoot_pressed = shoot_control.into_iter().any(|b| b.is_down());
+
                 if *cooldown > 0.0 {
                     *cooldown -= delta_seconds;
                 }
-                if *cooldown <= 0.0 && shoot_control.into_iter().any(|b| b.is_down()) {
-                    *cooldown = 0.5;
+                if *cooldown <= 0.0 && shoot_pressed {
+                    *cooldown = 0.5 / *shooting_speed;
                     app.projectiles.push(Projectile::from_speed(
                         48.0,
                         50.0,
@@ -292,6 +296,18 @@ impl Controller {
                         2.0,
                         Color::from_hex(0x0000ff),
                     ));
+                }
+
+                if shoot_pressed {
+                    if *shooting_speed <= 2.0 {
+                        *shooting_speed += delta_seconds * 0.5;
+                    } else {
+                        *shooting_speed = 2.0;
+                    }
+                } else if *shooting_speed > 1.0 {
+                    *shooting_speed -= delta_seconds;
+                } else {
+                    *shooting_speed = 1.0;
                 }
 
                 // Sync Mouse
