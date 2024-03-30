@@ -82,7 +82,7 @@ impl Projectile {
     }
 
     pub fn distance_ahead(&self, distance: f32) -> Vector2<f32> {
-        vector![self.angle.re, self.angle.im] * distance
+        self.angle * vector![distance, 0.0]
     }
 
     /// Note that this factors in the speed of the projectile to make its hitbox longer. To
