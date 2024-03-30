@@ -1,7 +1,7 @@
 use crate::{app::App, input::InputButton, projectile::Projectile, projectile::Rectangle};
 use macroquad::prelude::*;
 use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
-use std::num::NonZeroU8;
+use std::num::NonZeroU16;
 
 use crate::input::InputAxis;
 
@@ -104,12 +104,12 @@ pub struct ArmorRing {
 impl ArmorRing {
     pub fn from_size(
         size: Vector2<f32>,
-        health: u8,
+        health: u16,
         count: usize,
         radius: f32,
         speed: f32,
     ) -> Self {
-        let health = NonZeroU8::new(health).unwrap();
+        let health = NonZeroU16::new(health).unwrap();
         let armor = (0..count).map(|_| Some(Armor { size, health })).collect();
         let angle = 0.0;
         Self {
@@ -187,19 +187,19 @@ impl ArmorRing {
 #[derive(Clone, Copy, Debug)]
 pub struct Armor {
     pub size: Vector2<f32>,
-    pub health: NonZeroU8,
+    pub health: NonZeroU16,
 }
 
 pub struct Center {
     pub size: Vector2<f32>,
-    pub health: NonZeroU8,
+    pub health: NonZeroU16,
     pub angle: f32,
     pub speed: f32,
 }
 
 impl Center {
-    pub fn from_size(size: Vector2<f32>, health: u8, speed: f32) -> Self {
-        let health = NonZeroU8::new(health).unwrap();
+    pub fn from_size(size: Vector2<f32>, health: u16, speed: f32) -> Self {
+        let health = NonZeroU16::new(health).unwrap();
         let angle = 0.0;
         Self {
             size,
