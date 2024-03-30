@@ -83,10 +83,25 @@ impl Entity {
         Controller::update(self, delta_seconds, app);
     }
 
+    /// Returning `None` indicates a request for deletion.
     pub fn check_deletion(&mut self) -> Option<()> {
         if self.center.armor.is_none() {
             return None;
         }
+
+        let mut radius_squared = self.center.get_radius_squared();
+        for i in (0..self.rings.len()).rev() {
+            let ring = &mut self.rings[i];
+            match ring.get_full_radius_squared() {
+                Some(ring_radius) => {
+                    radius_squared = radius_squared.max(ring_radius);
+                }
+                None => {
+                    self.rings.swap_remove(i);
+                }
+            }
+        }
+        self.radius = radius_squared.sqrt();
 
         Some(())
     }

@@ -37,6 +37,7 @@ impl Projectile {
         }
     }
 
+    /// Returning `None` indicates a request for deletion.
     pub fn update(&mut self, delta_seconds: f32, app: &mut App) -> Option<()> {
         self.age += delta_seconds;
         if self.age >= self.lifetime {
