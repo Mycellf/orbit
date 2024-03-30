@@ -92,6 +92,19 @@ impl ArmorRing {
             })
             .collect()
     }
+
+    /// Returns a vector of colliders associated with their armor piece.
+    pub fn get_colliders_zip(
+        &mut self,
+        position: Point2<f32>,
+    ) -> Vec<(Rectangle, &mut Option<Armor>)> {
+        self.get_colliders(position)
+            .into_iter()
+            .zip(&mut *self.armor)
+            .map(|(r, a)| Some((r?, a)))
+            .filter_map(|a| a)
+            .collect()
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
