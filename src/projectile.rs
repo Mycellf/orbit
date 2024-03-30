@@ -149,6 +149,14 @@ impl Rectangle {
             draw_line(a.x, a.y, b.x, b.y, 0.1, MAGENTA);
         }
     }
+
+    pub fn radius_squared(&self) -> f32 {
+        distance_squared(&self.corners[0], &self.corners[2]) / 4.0
+    }
+
+    pub fn center(&self) -> Point2<f32> {
+        center(&self.corners[0], &self.corners[2])
+    }
 }
 
 /// For use with array::map.
