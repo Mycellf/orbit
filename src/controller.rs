@@ -65,7 +65,7 @@ impl Controller {
                         entity.position + displacement_from_angle(nudged_aim, entity.radius + 4.0),
                         vector![1.0, 4.0],
                         2.0,
-                        Color::from_hex(0x0000ff),
+                        entity.color,
                     ));
                 }
 
