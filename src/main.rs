@@ -2,6 +2,9 @@ use macroquad::prelude::*;
 use nalgebra::{point, vector};
 
 pub mod app;
+pub mod collision;
+pub mod components;
+pub mod controller;
 pub mod entity;
 pub mod input;
 pub mod mouse_display;
@@ -22,12 +25,12 @@ async fn main() {
     app.entities.push(entity::Entity::from_rings(
         point![0.0, 0.0],
         Color::from_hex(0x0000ff),
-        entity::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
+        components::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
         vec![
-            entity::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
+            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
             // *A gift to the auto formatter to keep it from messing this code up*
         ],
-        Some(entity::Controller::Player {
+        Some(controller::Controller::Player {
             speed: 36.0,
             x_control: input::InputAxis::from_inputs(
                 vec![KeyCode::D.into(), KeyCode::Right.into()],
@@ -48,10 +51,10 @@ async fn main() {
     app.entities.push(entity::Entity::from_rings(
         point![32.0, 16.0],
         Color::from_hex(0xff0000),
-        entity::Center::from_size(vector![2.0, 2.0], 8, PI / 3.0),
+        components::Center::from_size(vector![2.0, 2.0], 8, PI / 3.0),
         vec![
-            entity::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
-            entity::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
+            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
+            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
         ],
         None,
     ));
