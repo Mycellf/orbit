@@ -281,6 +281,9 @@ impl Controller {
 
                 // Shooting
                 let shoot_pressed = shoot_control.into_iter().any(|b| b.is_down());
+                let nudged_aim = UnitComplex::new(
+                    aim.angle() + rand::gen_range(-0.1, 0.1) * (*shooting_speed - 1.0),
+                );
 
                 if *cooldown > 0.0 {
                     *cooldown -= delta_seconds;
@@ -290,10 +293,8 @@ impl Controller {
                     app.projectiles.push(Projectile::from_speed(
                         48.0,
                         50.0,
-                        UnitComplex::new(
-                            aim.angle() + rand::gen_range(-0.1, 0.1) * (*shooting_speed - 1.0),
-                        ),
-                        entity.position + displacement_from_angle(aim, entity.radius + 6.0),
+                        nudged_aim,
+                        entity.position + displacement_from_angle(nudged_aim, entity.radius + 6.0),
                         vector![1.0, 4.0],
                         2.0,
                         Color::from_hex(0x0000ff),
