@@ -190,6 +190,22 @@ pub struct Armor {
     pub health: NonZeroU16,
 }
 
+impl Armor {
+    pub fn damage(reference: &mut Option<Armor>, damage: u16) {
+        if let Some(armor) = reference {
+            match NonZeroU16::new(armor.health.get() - damage) {
+                Some(health) => {
+                    armor.health = health;
+                }
+                None => {
+                    *reference = None;
+                    return;
+                }
+            }
+        }
+    }
+}
+
 pub struct Center {
     pub size: Vector2<f32>,
     pub health: NonZeroU16,
