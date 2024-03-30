@@ -50,7 +50,8 @@ impl Projectile {
                 self.speed * (self.speed_exp_base.powf(delta_seconds) - 1.0)
                     / self.speed_exp_base.ln(),
             );
-            self.speed *= self.speed_exp_base.powf(delta_seconds);
+            self.speed *= self.speed_exp_base.powf(delta_seconds); // TODO: check if this should go
+                                                                   // before the change in position
         }
 
         Some(())
@@ -84,4 +85,83 @@ impl Projectile {
     pub fn distance_ahead(&self, distance: f32) -> Vector2<f32> {
         vector![self.angle.re, self.angle.im] * distance
     }
+
+    /// Note that this factors in the speed of the projectile to make its hitbox longer. To
+    /// disable this, set `delta_seconds` to 0.0.
+    pub fn get_collider(&self, delta_seconds: f32) -> Rectangle {
+        Rectangle::from_dimensions(
+            self.position,
+            vector![self.size.y + self.speed * delta_seconds, self.size.x],
+            vector![1.0, 0.5],
+            self.angle,
+        )
+    }
+}
+
+/// Corners are assumed to be in either clockwise or counter-clockwise order.
+#[derive(Clone, Debug)]
+pub struct Rectangle {
+    pub corners: [Point2<f32>; 4],
+    pub edges: [Vector2<f32>; 4],
+}
+
+impl Rectangle {
+    pub fn from_dimensions(
+        center: Point2<f32>,
+        size: Vector2<f32>,
+        offset: Vector2<f32>,
+        angle: UnitComplex<f32>,
+    ) -> Self {
+        let rot_size_x = angle * vector![size.x, 0.0];
+        let rot_size_y = angle * vector![0.0, size.y];
+        let corner = center - rot_size_x * offset.x - rot_size_y * offset.y;
+        Self::from_corners([
+            corner,
+            corner + rot_size_x,
+            corner + rot_size_x + rot_size_y,
+            corner + rot_size_y,
+        ])
+    }
+
+    /// Corners are assumed to be in either clockwise or counter-clockwise order.
+    pub fn from_corners(corners: [Point2<f32>; 4]) -> Self {
+        let edges = loop_indices().map(|(a, b)| corners[a] - corners[b]);
+        Self { corners, edges }
+    }
+
+    pub fn is_colliding(&self, other: &Self) -> bool {
+        self.check_collision_one_sided(other) && other.check_collision_one_sided(self)
+    }
+
+    fn check_collision_one_sided(&self, other: &Self) -> bool {
+        // I hope I don't regret doing this with iterator syntax. (as far a code maintenance goes)
+        !(self.corners.into_iter())
+            .zip(self.edges)
+            .any(|(offset, axis)| {
+                (other.corners)
+                    .into_iter()
+                    .all(|corner| (corner - offset).dot(&axis) >= 0.0)
+            })
+    }
+
+    pub fn draw_debug(&self) {
+        let points: [_; 4] = loop_indices().map(|(a, b)| (&self.corners[a], &self.corners[b]));
+        for (a, b) in points {
+            draw_line(a.x, a.y, b.x, b.y, 0.1, MAGENTA);
+        }
+    }
+}
+
+/// For use with array::map.
+/// It is rarely nececcary to specify the length of the output.
+/// ```
+/// assert_eq!(loop_indices(), [(0, 1), (1, 2), (2, 0)]);
+/// ```
+fn loop_indices<const N: usize>() -> [(usize, usize); N] {
+    let mut array = [Default::default(); N];
+    for i in 0..N {
+        array[i] = (i, i + 1);
+    }
+    array[N - 1].1 = 0;
+    array
 }

@@ -1,4 +1,4 @@
-use crate::{app::App, input::InputButton, projectile::Projectile};
+use crate::{app::App, input::InputButton, projectile::Projectile, projectile::Rectangle};
 use macroquad::prelude::*;
 use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
 use std::num::NonZeroU8;
@@ -121,9 +121,8 @@ impl ArmorRing {
     }
 
     pub fn draw_around(&self, position: Point2<f32>, color: Color) {
-        use std::f32::consts::PI;
         let mut angle = self.angle;
-        let increment = (2.0 * PI) / self.armor.len() as f32;
+        let increment = self.get_increment();
 
         for armor in &self.armor {
             if let Some(Armor { size, .. }) = armor {
@@ -157,6 +156,31 @@ impl ArmorRing {
             .max_by(|x, y| x.partial_cmp(y).unwrap())
             .unwrap_or(0.0);
         max_height + self.radius
+    }
+
+    pub fn get_increment(&self) -> f32 {
+        use std::f32::consts::PI;
+        (2.0 * PI) / self.armor.len() as f32
+    }
+
+    pub fn get_colliders(&self, position: Point2<f32>) -> Vec<Option<Rectangle>> {
+        let increment = self.get_increment();
+        (&self.armor)
+            .into_iter()
+            .enumerate()
+            .map(|(i, armor)| match armor {
+                Some(armor) => {
+                    let angle = UnitComplex::new(increment * i as f32 + self.angle);
+                    Some(Rectangle::from_dimensions(
+                        position + angle * vector![self.radius, 0.0],
+                        vector![armor.size.y, armor.size.x],
+                        vector![0.0, 0.5],
+                        angle,
+                    ))
+                }
+                None => None,
+            })
+            .collect()
     }
 }
 
@@ -203,6 +227,15 @@ impl Center {
         use std::f32::consts::PI;
         self.angle += self.speed * delta_seconds;
         self.angle %= 2.0 * PI;
+    }
+
+    pub fn get_collider(&self, position: Point2<f32>) -> Rectangle {
+        Rectangle::from_dimensions(
+            position,
+            self.size,
+            vector![0.5, 0.5],
+            UnitComplex::new(self.angle),
+        )
     }
 }
 
