@@ -1,6 +1,6 @@
-use crate::{app::App, collision::Rectangle};
+use crate::{app::App, collision::Rectangle, components::Armor, entity::Entity};
 use macroquad::prelude::*;
-use nalgebra::{vector, Point2, UnitComplex, Vector2};
+use nalgebra::{distance_squared, vector, Point2, UnitComplex, Vector2};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Projectile {
@@ -43,6 +43,15 @@ impl Projectile {
             return None;
         }
 
+        let collider = self.get_collider(delta_seconds);
+        for entity in &mut app.entities {
+            if entity.color != self.color
+                && Self::check_collisions_with_entity(&collider, entity, self.angle).is_some()
+            {
+                return None;
+            }
+        }
+
         if self.speed_exp_base == 1.0 {
             self.position += self.velocity() * delta_seconds;
         } else {
@@ -83,6 +92,43 @@ impl Projectile {
 
     pub fn distance_ahead(&self, distance: f32) -> Vector2<f32> {
         self.angle * vector![distance, 0.0]
+    }
+
+    pub fn check_collisions_with_entity(
+        collider: &Rectangle,
+        entity: &mut Entity,
+        direction: UnitComplex<f32>,
+    ) -> Option<()> {
+        let center = collider.center();
+        if distance_squared(&center, &entity.position)
+            > (collider.radius_squared().sqrt() + entity.radius).powi(2)
+        {
+            return None;
+        }
+
+        let direction = vector![direction.re, direction.im];
+        if let Some((_, armor)) = (&mut entity.rings)
+            .into_iter()
+            .flat_map(|ring| ring.get_colliders_zip(entity.position))
+            .filter(|(rect, _)| collider.is_colliding(rect))
+            .map(|(rect, armor)| {
+                // sort collisions by closest point
+                (
+                    rect.corners
+                        .into_iter()
+                        .map(|c| (c - center).dot(&direction))
+                        .min_by(|a, b| a.partial_cmp(b).unwrap())
+                        .unwrap(),
+                    armor,
+                )
+            })
+            .min_by(|a, b| a.0.partial_cmp(&b.0).unwrap())
+        {
+            Armor::damage(armor, 1);
+            return Some(());
+        }
+
+        None
     }
 
     /// Note that this factors in the speed of the projectile to make its hitbox longer. To
