@@ -59,13 +59,12 @@ impl ArmorRing {
         self.angle %= 2.0 * PI;
     }
 
-    pub fn get_full_radius_squared(&self) -> f32 {
+    pub fn get_full_radius_squared(&self) -> Option<f32> {
         (&self.armor)
             .into_iter()
             .filter_map(|&a| a)
             .map(|a| a.get_radius_squared(self.radius))
             .max_by(|x, y| x.partial_cmp(y).unwrap())
-            .unwrap_or(0.0)
     }
 
     pub fn get_increment(&self) -> f32 {
@@ -107,37 +106,11 @@ impl ArmorRing {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
-pub struct Armor {
-    pub size: Vector2<f32>,
-    pub health: NonZeroU16,
-}
-
-impl Armor {
-    pub fn damage(reference: &mut Option<Armor>, damage: u16) {
-        if let Some(armor) = reference {
-            match NonZeroU16::new(armor.health.get().saturating_sub(damage)) {
-                Some(health) => {
-                    armor.health = health;
-                }
-                None => {
-                    *reference = None;
-                    return;
-                }
-            }
-        }
-    }
-
-    pub fn get_radius_squared(&self, radius: f32) -> f32 {
-        let height = self.size.y + radius;
-        height * height + self.size.x * self.size.x / 4.0
-    }
-}
-
+/// Note that accessing `size` or `health` will panic if `armor` is `None`. This should never be
+/// the case unless the entity center is associated with is about to be deleted.
 #[derive(Clone, Copy, Debug)]
 pub struct Center {
-    pub size: Vector2<f32>,
-    pub health: NonZeroU16,
+    pub armor: Option<Armor>,
     pub angle: f32,
     pub speed: f32,
 }
@@ -145,10 +118,10 @@ pub struct Center {
 impl Center {
     pub fn from_size(size: Vector2<f32>, health: u16, speed: f32) -> Self {
         let health = NonZeroU16::new(health).unwrap();
+        let armor = Some(Armor { size, health });
         let angle = 0.0;
         Self {
-            size,
-            health,
+            armor,
             angle,
             speed,
         }
@@ -185,5 +158,46 @@ impl Center {
             vector![0.5, 0.5],
             UnitComplex::new(self.angle),
         )
+    }
+}
+
+impl std::ops::Deref for Center {
+    type Target = Armor;
+
+    fn deref(&self) -> &Self::Target {
+        self.armor.as_ref().unwrap()
+    }
+}
+
+impl std::ops::DerefMut for Center {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.armor.as_mut().unwrap()
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Armor {
+    pub size: Vector2<f32>,
+    pub health: NonZeroU16,
+}
+
+impl Armor {
+    pub fn damage(reference: &mut Option<Armor>, damage: u16) {
+        if let Some(armor) = reference {
+            match NonZeroU16::new(armor.health.get().saturating_sub(damage)) {
+                Some(health) => {
+                    armor.health = health;
+                }
+                None => {
+                    *reference = None;
+                    return;
+                }
+            }
+        }
+    }
+
+    pub fn get_radius_squared(&self, radius: f32) -> f32 {
+        let height = self.size.y + radius;
+        height * height + self.size.x * self.size.x / 4.0
     }
 }

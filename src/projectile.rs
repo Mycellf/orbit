@@ -44,10 +44,14 @@ impl Projectile {
         }
 
         let collider = self.get_collider(delta_seconds);
-        for entity in &mut app.entities {
+        for i in (0..app.entities.len()).rev() {
+            let entity = &mut app.entities[i];
             if entity.color != self.color
                 && Self::check_collisions_with_entity(&collider, entity, self.angle).is_some()
             {
+                if entity.check_deletion().is_none() {
+                    app.entities.swap_remove(i);
+                }
                 return None;
             }
         }
@@ -110,6 +114,10 @@ impl Projectile {
         if let Some((_, armor)) = (&mut entity.rings)
             .into_iter()
             .flat_map(|ring| ring.get_colliders_zip(entity.position))
+            .chain(vec![(
+                entity.center.get_collider(entity.position),
+                &mut entity.center.armor,
+            )])
             .filter(|(rect, _)| collider.is_colliding(rect))
             .map(|(rect, armor)| {
                 // sort collisions by closest point

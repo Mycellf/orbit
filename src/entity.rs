@@ -83,6 +83,14 @@ impl Entity {
         Controller::update(self, delta_seconds, app);
     }
 
+    pub fn check_deletion(&mut self) -> Option<()> {
+        if self.center.armor.is_none() {
+            return None;
+        }
+
+        Some(())
+    }
+
     pub fn get_full_radius(&self) -> f32 {
         Self::get_radius_squared(&self.rings, &self.center).sqrt()
     }
@@ -90,7 +98,7 @@ impl Entity {
     fn get_radius_squared(rings: &Vec<ArmorRing>, center: &Center) -> f32 {
         rings
             .into_iter()
-            .map(|r| r.get_full_radius_squared())
+            .map(|r| r.get_full_radius_squared().unwrap_or(0.0))
             .max_by(|x, y| x.partial_cmp(y).unwrap())
             .unwrap_or_else(|| center.get_radius_squared())
     }
