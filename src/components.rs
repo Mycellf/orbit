@@ -116,7 +116,7 @@ pub struct Armor {
 impl Armor {
     pub fn damage(reference: &mut Option<Armor>, damage: u16) {
         if let Some(armor) = reference {
-            match NonZeroU16::new(armor.health.get() - damage) {
+            match NonZeroU16::new(armor.health.get().saturating_sub(damage)) {
                 Some(health) => {
                     armor.health = health;
                 }
