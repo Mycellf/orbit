@@ -50,8 +50,7 @@ impl Projectile {
                 self.speed * (self.speed_exp_base.powf(delta_seconds) - 1.0)
                     / self.speed_exp_base.ln(),
             );
-            self.speed *= self.speed_exp_base.powf(delta_seconds); // TODO: check if this should go
-                                                                   // before the change in position
+            self.speed *= self.speed_exp_base.powf(delta_seconds);
         }
 
         Some(())
