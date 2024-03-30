@@ -236,8 +236,13 @@ impl Controller {
                 // Motion
                 x_control.update_state();
                 y_control.update_state();
-                entity.position +=
-                    vector![x_control.as_f32(), y_control.as_f32()] * (*speed * delta_seconds);
+                let input = vector![x_control.as_f32(), y_control.as_f32()];
+                let input = if input.x == 0.0 {
+                    input
+                } else {
+                    input.normalize()
+                };
+                entity.position += input * (*speed * delta_seconds);
 
                 // Shooting
                 if *cooldown > 0.0 {
