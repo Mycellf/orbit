@@ -1,6 +1,6 @@
 use crate::app::App;
 use macroquad::prelude::*;
-use nalgebra::{vector, Point2, UnitComplex, Vector2};
+use nalgebra::{center, distance_squared, vector, Point2, UnitComplex, Vector2};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Projectile {
