@@ -34,8 +34,6 @@ impl MouseDisplay {
         self.position = position.into();
     }
 
-    pub fn update(&mut self, delta_seconds: f32) {}
-
     pub fn set_active_from_ring(&mut self, ring: &crate::components::ArmorRing) {
         self.active_corners = 0;
         for armor in &ring.armor {

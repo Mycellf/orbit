@@ -86,8 +86,6 @@ impl App {
                 }
             }
         }
-
-        self.mouse.update(self.timestep_length);
     }
 }
 
