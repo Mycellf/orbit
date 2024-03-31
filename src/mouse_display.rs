@@ -10,6 +10,7 @@ pub struct MouseDisplay {
     pub position: Point2<f32>,
     pub color: Color,
     pub active_corners: u8,
+    pub size_boost: u16,
 }
 
 impl MouseDisplay {
@@ -20,6 +21,7 @@ impl MouseDisplay {
         let position = point![0.0, 0.0];
         let color = Default::default();
         let active_corners = 0xf;
+        let size_boost = 0;
         Self {
             radius,
             center_angle,
@@ -29,6 +31,7 @@ impl MouseDisplay {
             position,
             color,
             active_corners,
+            size_boost,
         }
     }
 
@@ -62,6 +65,8 @@ impl MouseDisplay {
             },
         );
 
+        let size_boost = self.size_boost as f32 / u16::MAX as f32 * 1.25;
+
         let angle = UnitComplex::new(self.ring_angle + PI / 4.0);
         let radius = self.radius + 0.5;
         for (i, (x, y)) in get_rotations_of(angle.re * radius, angle.im * radius)
@@ -79,8 +84,8 @@ impl MouseDisplay {
             draw_rectangle_ex(
                 self.position.x + x,
                 self.position.y + y,
-                1.0,
-                1.0,
+                1.0 + size_boost,
+                1.0 + size_boost,
                 DrawRectangleParams {
                     offset: vec2(0.5, 0.5),
                     rotation: self.ring_angle,

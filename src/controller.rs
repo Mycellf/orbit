@@ -92,10 +92,11 @@ impl Controller {
                     app.mouse.active_corners = 0;
                 }
                 app.mouse.radius = (*shooting_speed - 1.0)
-                    * (length(entity.position - app.mouse.position) - entity.radius - 4.0)
+                    * (length(entity.position - app.mouse.position))
                     * 0.125;
                 app.mouse.radius = app.mouse.radius.max(0.0);
                 app.mouse.color = entity.color;
+                app.mouse.size_boost = (*cooldown * *shooting_speed * u16::MAX as f32) as u16;
             }
         }
         Some(())
