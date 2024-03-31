@@ -44,6 +44,16 @@ impl Projectile {
             return None;
         }
 
+        if self.speed_exp_base == 1.0 {
+            self.position += self.velocity() * delta_seconds;
+        } else {
+            self.position += self.distance_ahead(
+                self.speed * (self.speed_exp_base.powf(delta_seconds) - 1.0)
+                    / self.speed_exp_base.ln(),
+            );
+            self.speed *= self.speed_exp_base.powf(delta_seconds);
+        }
+
         let collider = self.get_collider(delta_seconds);
         for i in (0..app.entities.len()).rev() {
             let entity = &mut app.entities[i];
@@ -56,17 +66,6 @@ impl Projectile {
                 return None;
             }
         }
-
-        if self.speed_exp_base == 1.0 {
-            self.position += self.velocity() * delta_seconds;
-        } else {
-            self.position += self.distance_ahead(
-                self.speed * (self.speed_exp_base.powf(delta_seconds) - 1.0)
-                    / self.speed_exp_base.ln(),
-            );
-            self.speed *= self.speed_exp_base.powf(delta_seconds);
-        }
-
         Some(())
     }
 

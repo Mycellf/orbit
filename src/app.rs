@@ -73,9 +73,6 @@ impl App {
     pub fn run_timestep(&mut self) {
         unsafe {
             let app = &mut *(self as *mut App); // Nececary due to the borrow checker
-            for entity in &mut self.entities {
-                entity.update(self.timestep_length, app);
-            }
 
             for i in (0..self.projectiles.len()).rev() {
                 if self.projectiles[i]
@@ -84,6 +81,10 @@ impl App {
                 {
                     self.projectiles.swap_remove(i);
                 }
+            }
+
+            for entity in &mut self.entities {
+                entity.update(self.timestep_length, app);
             }
         }
     }
