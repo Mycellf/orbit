@@ -20,7 +20,9 @@ impl ArmorRing {
         speed: f32,
     ) -> Self {
         let health = NonZeroU16::new(health).unwrap();
-        let armor = (0..count).map(|_| Some(Armor { size, health })).collect();
+        let armor = (0..count)
+            .map(|_| Some(Armor::from_size(size, health)))
+            .collect();
         let angle = 0.0;
         Self {
             armor,
@@ -35,17 +37,17 @@ impl ArmorRing {
         let increment = self.get_increment();
 
         for armor in &self.armor {
-            if let Some(Armor { size, .. }) = armor {
+            if let Some(armor) = armor {
                 let angle_complex = UnitComplex::new(angle);
                 draw_rectangle_ex(
                     position.x + self.radius * angle_complex.re,
                     position.y + self.radius * angle_complex.im,
-                    size.y,
-                    size.x,
+                    armor.size.y,
+                    armor.size.x,
                     DrawRectangleParams {
                         offset: vec2(0.0, 0.5),
                         rotation: angle,
-                        color,
+                        color: armor.modify_color(color),
                     },
                 );
             }
@@ -53,10 +55,16 @@ impl ArmorRing {
         }
     }
 
-    pub fn update_angle(&mut self, delta_seconds: f32) {
+    pub fn update(&mut self, delta_seconds: f32) {
         use std::f32::consts::PI;
         self.angle += self.speed * delta_seconds;
         self.angle %= 2.0 * PI;
+
+        for armor in &mut self.armor {
+            if let Some(armor) = armor {
+                armor.update_hit_effect(delta_seconds);
+            }
+        }
     }
 
     pub fn get_full_radius_squared(&self) -> Option<f32> {
@@ -118,7 +126,7 @@ pub struct Center {
 impl Center {
     pub fn from_size(size: Vector2<f32>, health: u16, speed: f32) -> Self {
         let health = NonZeroU16::new(health).unwrap();
-        let armor = Some(Armor { size, health });
+        let armor = Some(Armor::from_size(size, health));
         let angle = 0.0;
         Self {
             armor,
@@ -136,15 +144,16 @@ impl Center {
             DrawRectangleParams {
                 offset: vec2(0.5, 0.5),
                 rotation: self.angle,
-                color,
+                color: self.modify_color(color),
             },
         );
     }
 
-    pub fn update_angle(&mut self, delta_seconds: f32) {
+    pub fn update(&mut self, delta_seconds: f32) {
         use std::f32::consts::PI;
         self.angle += self.speed * delta_seconds;
         self.angle %= 2.0 * PI;
+        self.update_hit_effect(delta_seconds);
     }
 
     pub fn get_radius_squared(&self) -> f32 {
@@ -179,14 +188,25 @@ impl std::ops::DerefMut for Center {
 pub struct Armor {
     pub size: Vector2<f32>,
     pub health: NonZeroU16,
+    pub hit_effect: u16,
 }
 
 impl Armor {
+    pub fn from_size(size: Vector2<f32>, health: NonZeroU16) -> Self {
+        let hit_effect = 0;
+        Self {
+            size,
+            health,
+            hit_effect,
+        }
+    }
+
     pub fn damage(reference: &mut Option<Armor>, damage: u16) {
         if let Some(armor) = reference {
             match NonZeroU16::new(armor.health.get().saturating_sub(damage)) {
                 Some(health) => {
                     armor.health = health;
+                    armor.hit_effect = u16::MAX / 2;
                 }
                 None => {
                     *reference = None;
@@ -199,5 +219,20 @@ impl Armor {
     pub fn get_radius_squared(&self, radius: f32) -> f32 {
         let height = self.size.y + radius;
         height * height + self.size.x * self.size.x / 4.0
+    }
+
+    pub fn modify_color(&self, color: Color) -> Color {
+        let multiplier = 1.0 - self.hit_effect as f32 / u16::MAX as f32;
+        Color {
+            r: color.r * multiplier,
+            g: color.g * multiplier,
+            b: color.b * multiplier,
+            a: color.a,
+        }
+    }
+
+    pub fn update_hit_effect(&mut self, delta_seconds: f32) {
+        self.hit_effect =
+            (self.hit_effect).saturating_sub((2.0 * delta_seconds * u16::MAX as f32) as u16)
     }
 }

@@ -75,9 +75,9 @@ impl Entity {
     }
 
     pub fn update(&mut self, delta_seconds: f32, app: &mut App) {
-        self.center.update_angle(delta_seconds);
+        self.center.update(delta_seconds);
         for ring in &mut *self.rings {
-            ring.update_angle(delta_seconds);
+            ring.update(delta_seconds);
         }
 
         Controller::update(self, delta_seconds, app);
