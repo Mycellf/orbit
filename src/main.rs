@@ -21,7 +21,7 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     use std::f32::consts::PI;
-    let mut app = app::App::from_ups(30.0);
+    let mut app = app::App::from_ups(120.0);
     app.entities.push(entity::Entity::from_rings(
         point![0.0, 0.0],
         Color::from_hex(0x0000ff),
