@@ -27,7 +27,7 @@ async fn main() {
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
         vec![
-            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
+            // components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
             // *A gift to the auto formatter to keep it from messing this code up*
         ],
         Some(controller::Controller::Player {
@@ -58,7 +58,6 @@ async fn main() {
         ],
         None,
     ));
-    app.entities[0].rings[0].armor[0] = None;
 
     show_mouse(false);
 

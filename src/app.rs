@@ -85,8 +85,6 @@ impl App {
                     self.projectiles.swap_remove(i);
                 }
             }
-
-            self.mouse.update(self.timestep_length)
         }
     }
 }
