@@ -21,7 +21,7 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     use std::f32::consts::PI;
-    let mut app = app::App::from_ups(120.0);
+    let mut app = app::App::from_ups(30.0);
     app.entities.push(entity::Entity::from_rings(
         point![0.0, 0.0],
         Color::from_hex(0x0000ff),
@@ -30,23 +30,21 @@ async fn main() {
             components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
             // *A gift to rustfmt to keep it from messing this code up*
         ],
-        Some(controller::Controller::Player {
-            speed: 36.0,
-            x_control: input::InputAxis::from_inputs(
+        Some(controller::Controller::player(
+            36.0,
+            input::InputAxis::from_inputs(
                 vec![KeyCode::D.into(), KeyCode::Right.into()],
                 vec![KeyCode::A.into(), KeyCode::Left.into()],
             ),
-            y_control: input::InputAxis::from_inputs(
+            input::InputAxis::from_inputs(
                 vec![KeyCode::S.into(), KeyCode::Down.into()],
                 vec![KeyCode::W.into(), KeyCode::Up.into()],
             ),
-            shoot_control: vec![
+            vec![
                 input::InputButton::Mouse(MouseButton::Left),
                 input::InputButton::Keyboard(KeyCode::Space),
             ],
-            cooldown: 0.0,
-            shooting_speed: 1.0,
-        }),
+        )),
     ));
     app.entities.push(entity::Entity::from_rings(
         point![32.0, 16.0],

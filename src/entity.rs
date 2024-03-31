@@ -4,13 +4,14 @@ use crate::{
     controller::Controller,
 };
 use macroquad::prelude::*;
-use nalgebra::{Point2, UnitComplex};
+use nalgebra::{Point2, UnitComplex, Vector2};
 
 #[derive(Clone, Debug)]
 pub struct Entity {
     pub rings: Vec<ArmorRing>,
     pub center: Center,
     pub position: Point2<f32>,
+    pub velocity: Vector2<f32>,
     pub aim: Option<UnitComplex<f32>>,
     pub radius: f32,
     pub color: Color,
@@ -27,10 +28,12 @@ impl Entity {
     ) -> Self {
         let aim = None;
         let radius = Self::get_radius_squared(&rings, &center).sqrt();
+        let velocity = Default::default();
         Self {
             rings,
             center,
             position,
+            velocity,
             aim,
             radius,
             color,
@@ -81,6 +84,8 @@ impl Entity {
         }
 
         Controller::update(self, delta_seconds, app);
+
+        self.position += self.velocity * delta_seconds;
     }
 
     /// Returning `None` indicates a request for deletion.

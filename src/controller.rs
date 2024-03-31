@@ -17,6 +17,10 @@ pub enum Controller {
         cooldown: f32,
         shooting_speed: f32,
     },
+    Enemy {
+        speed: f32,
+        drag: f32,
+    },
 }
 
 impl Controller {
@@ -45,7 +49,7 @@ impl Controller {
                 } else {
                     input.normalize()
                 };
-                entity.position += input * (*speed * delta_seconds);
+                entity.velocity = input * *speed;
 
                 // Shooting
                 let shoot_pressed = shoot_control.into_iter().any(|b| b.is_down());
@@ -98,8 +102,34 @@ impl Controller {
                 app.mouse.color = entity.color;
                 app.mouse.size_boost = (*cooldown * *shooting_speed * u16::MAX as f32) as u16;
             }
+            Self::Enemy { speed, drag } => {
+                let direction = UnitComplex::new(0.0);
+                // let impulse =
+            }
         }
         Some(())
+    }
+
+    pub fn player(
+        speed: f32,
+        x_control: InputAxis,
+        y_control: InputAxis,
+        shoot_control: Vec<InputButton>,
+    ) -> Self {
+        let cooldown = 0.0;
+        let shooting_speed = 1.0;
+        Self::Player {
+            speed,
+            x_control,
+            y_control,
+            shoot_control,
+            cooldown,
+            shooting_speed,
+        }
+    }
+
+    pub fn enemy(speed: f32, drag: f32) -> Self {
+        Self::Enemy { speed, drag }
     }
 }
 
