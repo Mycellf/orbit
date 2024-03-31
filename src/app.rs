@@ -43,13 +43,13 @@ impl App {
         clear_background(BLACK);
         update_camera(&mut self.camera);
 
-        for entity in &self.entities {
-            entity.draw();
-        }
-
         let frame_time = self.frame_time.max(self.timestep_length);
         for projectile in &self.projectiles {
             projectile.draw(frame_time);
+        }
+
+        for entity in &self.entities {
+            entity.draw();
         }
 
         self.mouse.draw();
