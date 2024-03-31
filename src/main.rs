@@ -55,7 +55,6 @@ async fn main() {
         vec![
             components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
-            components::ArmorRing::from_size(vector![16.0, 2.0], 32, 2, 8.5, -PI / 24.0),
         ],
         None,
     ));
