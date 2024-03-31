@@ -1,7 +1,7 @@
 use crate::collision::Rectangle;
 use macroquad::prelude::*;
 use nalgebra::{vector, Point2, UnitComplex, Vector2};
-use std::num::NonZeroU16;
+use std::num::NonZeroU8;
 
 #[derive(Clone, Debug)]
 pub struct ArmorRing {
@@ -14,12 +14,12 @@ pub struct ArmorRing {
 impl ArmorRing {
     pub fn from_size(
         size: Vector2<f32>,
-        health: u16,
+        health: u8,
         count: usize,
         radius: f32,
         speed: f32,
     ) -> Self {
-        let health = NonZeroU16::new(health).unwrap();
+        let health = NonZeroU8::new(health).unwrap();
         let armor = (0..count)
             .map(|_| Some(Armor::from_size(size, health)))
             .collect();
@@ -42,7 +42,7 @@ impl ArmorRing {
                 draw_rectangle_ex(
                     position.x + self.radius * angle_complex.re,
                     position.y + self.radius * angle_complex.im,
-                    armor.health.get() as f32 / armor.size.x * armor.size.y,
+                    armor.get_health_ratio() * armor.size.y,
                     armor.size.x,
                     DrawRectangleParams {
                         offset: vec2(0.0, 0.5),
@@ -90,10 +90,7 @@ impl ArmorRing {
                     let angle = UnitComplex::new(increment * i as f32 + self.angle);
                     Some(Rectangle::from_dimensions(
                         position + angle * vector![self.radius, 0.0],
-                        vector![
-                            armor.health.get() as f32 / armor.size.x * armor.size.y,
-                            armor.size.x
-                        ],
+                        vector![armor.get_health_ratio() * armor.size.y, armor.size.x],
                         vector![0.0, 0.5],
                         angle,
                     ))
@@ -127,8 +124,8 @@ pub struct Center {
 }
 
 impl Center {
-    pub fn from_size(size: Vector2<f32>, health: u16, speed: f32) -> Self {
-        let health = NonZeroU16::new(health).unwrap();
+    pub fn from_size(size: Vector2<f32>, health: u8, speed: f32) -> Self {
+        let health = NonZeroU8::new(health).unwrap();
         let armor = Some(Armor::from_size(size, health));
         let angle = 0.0;
         Self {
@@ -190,23 +187,26 @@ impl std::ops::DerefMut for Center {
 #[derive(Clone, Copy, Debug)]
 pub struct Armor {
     pub size: Vector2<f32>,
-    pub health: NonZeroU16,
+    pub health: NonZeroU8,
+    pub max_health: NonZeroU8,
     pub hit_effect: u16,
 }
 
 impl Armor {
-    pub fn from_size(size: Vector2<f32>, health: NonZeroU16) -> Self {
+    pub fn from_size(size: Vector2<f32>, health: NonZeroU8) -> Self {
         let hit_effect = 0;
+        let max_health = health;
         Self {
             size,
             health,
+            max_health,
             hit_effect,
         }
     }
 
-    pub fn damage(reference: &mut Option<Armor>, damage: u16) {
+    pub fn damage(reference: &mut Option<Armor>, damage: u8) {
         if let Some(armor) = reference {
-            match NonZeroU16::new(armor.health.get().saturating_sub(damage)) {
+            match NonZeroU8::new(armor.health.get().saturating_sub(damage)) {
                 Some(health) => {
                     armor.health = health;
                     armor.hit_effect = u16::MAX / 4 * 3;
@@ -237,5 +237,9 @@ impl Armor {
     pub fn update_hit_effect(&mut self, delta_seconds: f32) {
         self.hit_effect =
             (self.hit_effect).saturating_sub((2.0 * delta_seconds * u16::MAX as f32) as u16)
+    }
+
+    pub fn get_health_ratio(&self) -> f32 {
+        self.health.get() as f32 / self.max_health.get() as f32
     }
 }
