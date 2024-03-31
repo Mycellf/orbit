@@ -44,6 +44,7 @@ impl Projectile {
             return None;
         }
 
+        // Motion
         if self.speed_exp_base == 1.0 {
             self.position += self.velocity() * delta_seconds;
         } else {
@@ -54,6 +55,7 @@ impl Projectile {
             self.speed *= self.speed_exp_base.powf(delta_seconds);
         }
 
+        // Collision
         let collider = self.get_collider(delta_seconds);
         for i in (0..app.entities.len()).rev() {
             let entity = &mut app.entities[i];
