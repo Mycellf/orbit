@@ -5,6 +5,7 @@ use crate::{
 };
 use macroquad::prelude::*;
 use nalgebra::{Point2, UnitComplex, Vector2};
+use uuid::Uuid;
 
 #[derive(Clone, Debug)]
 pub struct Entity {
@@ -16,6 +17,7 @@ pub struct Entity {
     pub radius: f32,
     pub color: Color,
     pub controller: Option<Controller>,
+    pub uuid: Uuid,
 }
 
 impl Entity {
@@ -29,6 +31,7 @@ impl Entity {
         let aim = None;
         let radius = Self::get_radius_squared(&rings, &center).sqrt();
         let velocity = Default::default();
+        let uuid = Uuid::new_v4();
         Self {
             rings,
             center,
@@ -38,6 +41,7 @@ impl Entity {
             radius,
             color,
             controller,
+            uuid,
         }
     }
 

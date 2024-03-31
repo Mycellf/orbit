@@ -54,7 +54,7 @@ async fn main() {
             components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
         ],
-        None,
+        Some(controller::Controller::enemy(16.0, 48.0, 64.0)),
     ));
 
     show_mouse(false);
