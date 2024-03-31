@@ -42,7 +42,7 @@ impl ArmorRing {
                 draw_rectangle_ex(
                     position.x + self.radius * angle_complex.re,
                     position.y + self.radius * angle_complex.im,
-                    armor.size.y,
+                    armor.health.get() as f32 / armor.size.x * armor.size.y,
                     armor.size.x,
                     DrawRectangleParams {
                         offset: vec2(0.0, 0.5),
@@ -90,7 +90,10 @@ impl ArmorRing {
                     let angle = UnitComplex::new(increment * i as f32 + self.angle);
                     Some(Rectangle::from_dimensions(
                         position + angle * vector![self.radius, 0.0],
-                        vector![armor.size.y, armor.size.x],
+                        vector![
+                            armor.health.get() as f32 / armor.size.x * armor.size.y,
+                            armor.size.x
+                        ],
                         vector![0.0, 0.5],
                         angle,
                     ))

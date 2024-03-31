@@ -9,8 +9,9 @@ pub struct MouseDisplay {
     pub ring_speed: f32,
     pub position: Point2<f32>,
     pub color: Color,
-    pub active_corners: u8,
     pub size_boost: u16,
+    pub center_effect: u16,
+    pub corner_effects: [u16; 4],
 }
 
 impl MouseDisplay {
@@ -20,8 +21,9 @@ impl MouseDisplay {
         let ring_angle = 0.0;
         let position = point![0.0, 0.0];
         let color = Default::default();
-        let active_corners = 0xf;
         let size_boost = 0;
+        let center_effect = 0;
+        let corner_effects = [0; 4];
         Self {
             radius,
             center_angle,
@@ -30,8 +32,9 @@ impl MouseDisplay {
             ring_speed,
             position,
             color,
-            active_corners,
             size_boost,
+            center_effect,
+            corner_effects,
         }
     }
 
@@ -40,12 +43,16 @@ impl MouseDisplay {
         self.position = position.into();
     }
 
-    pub fn set_active_from_ring(&mut self, ring: &crate::components::ArmorRing) {
-        self.active_corners = 0;
-        for armor in &ring.armor {
-            self.active_corners <<= 1;
-            if armor.is_some() {
-                self.active_corners |= 1;
+    pub fn set_effects_from_ring(&mut self, ring: &crate::components::ArmorRing) {
+        for (armor, effect) in (&ring.armor)
+            .into_iter()
+            .rev()
+            .zip(&mut self.corner_effects)
+        {
+            if let Some(armor) = armor {
+                *effect = armor.hit_effect;
+            } else {
+                *effect = u16::MAX;
             }
         }
     }
@@ -61,7 +68,10 @@ impl MouseDisplay {
             DrawRectangleParams {
                 offset: vec2(0.5, 0.5),
                 rotation: self.center_angle,
-                color: WHITE,
+                color: Color {
+                    a: 1.0 - self.center_effect as f32 / u16::MAX as f32,
+                    ..WHITE
+                },
             },
         );
 
@@ -73,8 +83,12 @@ impl MouseDisplay {
             .into_iter()
             .enumerate()
         {
-            let color = if (self.active_corners >> i) & 1 > 0 {
-                self.color
+            let color = if self.corner_effects[i] < u16::MAX {
+                let multiplier = 1.0 - self.corner_effects[i] as f32 / u16::MAX as f32;
+                Color {
+                    a: multiplier,
+                    ..self.color
+                }
             } else {
                 Color {
                     a: self.radius.min(0.6),

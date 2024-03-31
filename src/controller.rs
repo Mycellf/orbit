@@ -23,6 +23,8 @@ pub enum Controller {
         min_range: f32,
         max_range: f32,
         target: Target,
+        max_cooldown: f32,
+        cooldown: f32,
     },
 }
 
@@ -91,12 +93,12 @@ impl Controller {
                 // Sync Mouse
                 use std::f32::consts::PI;
                 app.mouse.center_angle = entity.center.angle;
+                app.mouse.center_effect = entity.center.hit_effect;
                 if let Some(ring) = entity.rings.get(0) {
                     app.mouse.ring_angle = ring.angle - PI * 3.0 / 4.0;
-                    app.mouse.set_active_from_ring(ring);
+                    app.mouse.set_effects_from_ring(ring);
                 } else {
                     app.mouse.ring_angle = entity.center.angle * -0.5 - (PI * 3.0 / 4.0);
-                    app.mouse.active_corners = 0;
                 }
                 app.mouse.radius = (*shooting_speed - 1.0)
                     * (length(entity.position - app.mouse.position))
@@ -110,7 +112,10 @@ impl Controller {
                 min_range,
                 max_range,
                 target,
+                max_cooldown,
+                cooldown,
             } => {
+                entity.aim = None;
                 let target_entity = match target.get(app) {
                     Some(target_entity) => target_entity,
                     None => {
@@ -136,6 +141,21 @@ impl Controller {
                 entity.aim = Some(direction);
                 let impulse = direction * vector![*speed * multiplier, 0.0];
                 entity.velocity = impulse;
+
+                if *cooldown > 0.0 {
+                    *cooldown -= delta_seconds;
+                } else {
+                    *cooldown = *max_cooldown;
+                    app.projectiles.push(Projectile::from_speed(
+                        48.0,
+                        50.0,
+                        direction,
+                        entity.position + displacement_from_angle(direction, entity.radius + 4.0),
+                        vector![1.0, 4.0],
+                        2.0,
+                        entity.color,
+                    ));
+                }
             }
         }
         Some(())
@@ -159,13 +179,16 @@ impl Controller {
         }
     }
 
-    pub fn enemy(speed: f32, min_range: f32, max_range: f32) -> Self {
+    pub fn enemy(speed: f32, min_range: f32, max_range: f32, max_cooldown: f32) -> Self {
         let target = Target::default();
+        let cooldown = max_cooldown;
         Self::Enemy {
             speed,
             min_range,
             max_range,
             target,
+            max_cooldown,
+            cooldown,
         }
     }
 }
