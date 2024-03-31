@@ -206,7 +206,7 @@ impl Armor {
             match NonZeroU16::new(armor.health.get().saturating_sub(damage)) {
                 Some(health) => {
                     armor.health = health;
-                    armor.hit_effect = u16::MAX / 2;
+                    armor.hit_effect = u16::MAX / 4 * 3;
                 }
                 None => {
                     *reference = None;
