@@ -62,10 +62,9 @@ impl MouseDisplay {
             },
         );
 
-        let cos = (self.ring_angle + PI / 4.0).cos();
-        let sin = (self.ring_angle + PI / 4.0).sin();
+        let angle = UnitComplex::new(self.ring_angle + PI / 4.0);
         let radius = self.radius + 0.5;
-        for (i, (x, y)) in get_rotations_of(cos * radius, sin * radius)
+        for (i, (x, y)) in get_rotations_of(angle.re * radius, angle.im * radius)
             .into_iter()
             .enumerate()
         {
