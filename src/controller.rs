@@ -59,7 +59,7 @@ impl Controller {
                 // Shooting
                 let shoot_pressed = shoot_control.into_iter().any(|b| b.is_down());
                 let nudged_aim = UnitComplex::new(
-                    aim.angle() + rand::gen_range(-0.1, 0.1) * (*shooting_speed - 1.0),
+                    aim.angle() + rand::gen_range(-0.15, 0.15) * (*shooting_speed - 1.0),
                 );
 
                 if *cooldown > 0.0 {
