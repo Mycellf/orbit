@@ -28,7 +28,7 @@ async fn main() {
         components::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
         vec![
             // components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
-            // *A gift to the auto formatter to keep it from messing this code up*
+            // *A gift to rustfmt to keep it from messing this code up*
         ],
         Some(controller::Controller::Player {
             speed: 36.0,
