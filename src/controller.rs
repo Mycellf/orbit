@@ -28,6 +28,7 @@ pub enum Controller {
         turn_cooldown: f32,
         turn_cooldown_range: Range<f32>,
         strafe_multiplier: f32,
+        strafe_multiplier_range: Range<f32>,
     },
 }
 
@@ -119,6 +120,7 @@ impl Controller {
                 turn_cooldown,
                 turn_cooldown_range,
                 strafe_multiplier,
+                strafe_multiplier_range,
             } => {
                 entity.aim = None;
                 entity.velocity = vector![0.0, 0.0];
@@ -149,7 +151,9 @@ impl Controller {
                 } else {
                     *turn_cooldown =
                         rand::gen_range(turn_cooldown_range.start, turn_cooldown_range.end);
-                    *strafe_multiplier = rand::gen_range(-1.0, 1.0);
+                    *strafe_multiplier =
+                        rand::gen_range(strafe_multiplier_range.start, strafe_multiplier_range.end);
+                    *strafe_multiplier *= if rand::rand() & 1 > 0 { 1.0 } else { -1.0 };
                 }
 
                 let direction =
@@ -201,6 +205,7 @@ impl Controller {
         distance_range: Range<f32>,
         max_shoot_cooldown: f32,
         turn_cooldown_range: Range<f32>,
+        strafe_multiplier_range: Range<f32>,
     ) -> Self {
         let target = Target::default();
         let cooldown = max_shoot_cooldown;
@@ -215,6 +220,7 @@ impl Controller {
             turn_cooldown,
             turn_cooldown_range,
             strafe_multiplier,
+            strafe_multiplier_range,
         }
     }
 }
