@@ -29,6 +29,7 @@ pub enum Controller {
         turn_cooldown_range: Range<f32>,
         strafe_multiplier: f32,
         strafe_multiplier_range: Range<f32>,
+        selection_distance: f32,
     },
 }
 
@@ -122,6 +123,7 @@ impl Controller {
                 turn_cooldown_range,
                 strafe_multiplier,
                 strafe_multiplier_range,
+                selection_distance,
             } => {
                 entity.aim = None;
                 entity.velocity = vector![0.0, 0.0];
@@ -131,7 +133,8 @@ impl Controller {
                     None => {
                         let target_entity = (&app.entities).into_iter().find(|e| {
                             e.color != entity.color
-                                && length_squared(e.position - entity.position) < 128.0f32.powi(2)
+                                && length_squared(e.position - entity.position)
+                                    < selection_distance.powi(2)
                         });
                         if let Some(target_entity) = target_entity {
                             *target = Some(Target::from_uuid(target_entity.uuid));
@@ -227,6 +230,7 @@ impl Controller {
         max_shoot_cooldown: f32,
         turn_cooldown_range: Range<f32>,
         strafe_multiplier_range: Range<f32>,
+        selection_distance: f32,
     ) -> Self {
         let target = None;
         let cooldown = max_shoot_cooldown;
@@ -242,6 +246,7 @@ impl Controller {
             turn_cooldown_range,
             strafe_multiplier,
             strafe_multiplier_range,
+            selection_distance,
         }
     }
 }
