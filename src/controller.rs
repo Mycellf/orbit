@@ -116,6 +116,7 @@ impl Controller {
                 cooldown,
             } => {
                 entity.aim = None;
+                entity.velocity = vector![0.0, 0.0];
                 let target_entity = match target.get(app) {
                     Some(target_entity) => target_entity,
                     None => {
