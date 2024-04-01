@@ -42,7 +42,7 @@ impl ArmorRing {
                 draw_rectangle_ex(
                     position.x + self.radius * angle_complex.re,
                     position.y + self.radius * angle_complex.im,
-                    armor.get_health_ratio() * armor.size.y,
+                    (armor.get_health_ratio() * armor.size.y).max(0.25),
                     armor.size.x,
                     DrawRectangleParams {
                         offset: vec2(0.0, 0.5),
