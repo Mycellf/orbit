@@ -19,7 +19,7 @@ pub enum Controller {
         shooting_speed: f32,
     },
     Enemy {
-        speed: f32,
+        speed: Vector2<f32>,
         min_range: f32,
         max_range: f32,
         target: Target,
@@ -139,7 +139,7 @@ impl Controller {
                 let direction =
                     UnitComplex::from_complex(Complex::new(displacement.x, displacement.y));
                 entity.aim = Some(direction);
-                let impulse = direction * vector![*speed * multiplier, 0.0];
+                let impulse = direction * vector![speed.x * multiplier, speed.y];
                 entity.velocity = impulse;
 
                 if *cooldown > 0.0 {
@@ -179,7 +179,7 @@ impl Controller {
         }
     }
 
-    pub fn enemy(speed: f32, min_range: f32, max_range: f32, max_cooldown: f32) -> Self {
+    pub fn enemy(speed: Vector2<f32>, min_range: f32, max_range: f32, max_cooldown: f32) -> Self {
         let target = Target::default();
         let cooldown = max_cooldown;
         Self::Enemy {
