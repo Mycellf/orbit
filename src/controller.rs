@@ -166,7 +166,8 @@ impl Controller {
                 if *cooldown > 0.0 {
                     *cooldown -= delta_seconds;
                 } else {
-                    *cooldown = *max_shoot_cooldown;
+                    *cooldown =
+                        *max_shoot_cooldown * if entity.rings.len() > 0 { 1.0 } else { 1.5 };
                     app.projectiles.push(Projectile::from_speed(
                         48.0,
                         50.0,
