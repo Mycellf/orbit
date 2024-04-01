@@ -76,7 +76,7 @@ impl Controller {
                         nudged_aim,
                         entity.position + displacement_from_angle(nudged_aim, entity.radius + 4.0),
                         vector![1.0, 4.0],
-                        2.0,
+                        1.0,
                         entity.color,
                     ));
                 }
@@ -169,7 +169,7 @@ impl Controller {
                         direction,
                         entity.position + displacement_from_angle(direction, entity.radius + 4.0),
                         vector![1.0, 4.0],
-                        2.0,
+                        1.0,
                         entity.color,
                     ));
                 }
