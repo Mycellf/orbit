@@ -1,6 +1,7 @@
 use crate::{app::App, collision::Rectangle, components::Armor, entity::Entity};
 use macroquad::prelude::*;
 use nalgebra::{distance_squared, vector, Point2, UnitComplex, Vector2};
+use uuid::Uuid;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Projectile {
@@ -12,6 +13,7 @@ pub struct Projectile {
     pub age: f32,
     pub size: Vector2<f32>,
     pub color: Color,
+    pub sender: Uuid,
 }
 
 impl Projectile {
@@ -23,6 +25,7 @@ impl Projectile {
         size: Vector2<f32>,
         lifetime: f32,
         color: Color,
+        sender: Uuid,
     ) -> Self {
         let age = 0.0;
         Self {
@@ -34,6 +37,7 @@ impl Projectile {
             age,
             size,
             color,
+            sender,
         }
     }
 
@@ -60,7 +64,9 @@ impl Projectile {
         for i in (0..app.entities.len()).rev() {
             let entity = &mut app.entities[i];
             if entity.color != self.color
-                && Self::check_collisions_with_entity(&collider, entity, self.angle).is_some()
+                && self
+                    .check_collisions_with_entity(&collider, entity, self.angle)
+                    .is_some()
             {
                 if entity.check_deletion().is_none() {
                     app.entities.swap_remove(i);
@@ -101,6 +107,7 @@ impl Projectile {
     }
 
     pub fn check_collisions_with_entity(
+        &self,
         collider: &Rectangle,
         entity: &mut Entity,
         direction: UnitComplex<f32>,
@@ -135,6 +142,9 @@ impl Projectile {
             .min_by(|a, b| a.0.partial_cmp(&b.0).unwrap())
         {
             Armor::damage(armor, 1);
+            if let Some(controller) = &mut entity.controller {
+                controller.alert(self.sender);
+            }
             return Some(());
         }
 

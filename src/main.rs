@@ -23,7 +23,7 @@ async fn main() {
     use std::f32::consts::PI;
     let mut app = app::App::from_ups(120.0);
     app.entities.push(entity::Entity::from_rings(
-        point![0.0, 0.0],
+        point![-64.0, -16.0],
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
         vec![
@@ -47,7 +47,7 @@ async fn main() {
         )),
     ));
     app.entities.push(entity::Entity::from_rings(
-        point![32.0, 16.0],
+        point![64.0, 16.0],
         Color::from_hex(0xff0000),
         components::Center::from_size(vector![2.0, 2.0], 8, PI / 3.0),
         vec![

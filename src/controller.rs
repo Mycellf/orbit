@@ -22,7 +22,7 @@ pub enum Controller {
     Enemy {
         speed: Vector2<f32>,
         distance_range: Range<f32>,
-        target: Target,
+        target: Option<Target>,
         max_shoot_cooldown: f32,
         cooldown: f32,
         turn_cooldown: f32,
@@ -79,6 +79,7 @@ impl Controller {
                         vector![1.0, 4.0],
                         1.0,
                         entity.color,
+                        entity.uuid,
                     ));
                 }
 
@@ -124,15 +125,22 @@ impl Controller {
             } => {
                 entity.aim = None;
                 entity.velocity = vector![0.0, 0.0];
-                let target_entity = match target.get(app) {
+
+                let target_entity = match Target::try_get(target, app) {
                     Some(target_entity) => target_entity,
                     None => {
-                        let target_entity = (&app.entities)
-                            .into_iter()
-                            .find(|e| e.color != entity.color)?;
-                        target.set(target_entity);
+                        let target_entity = (&app.entities).into_iter().find(|e| {
+                            e.color != entity.color
+                                && length_squared(e.position - entity.position) < 128.0f32.powi(2)
+                        });
+                        if let Some(target_entity) = target_entity {
+                            *target = Some(Target::from_uuid(target_entity.uuid));
 
-                        target_entity
+                            target_entity
+                        } else {
+                            *target = None;
+                            return Some(());
+                        }
                     }
                 };
 
@@ -176,11 +184,23 @@ impl Controller {
                         vector![1.0, 4.0],
                         1.0,
                         entity.color,
+                        entity.uuid,
                     ));
                 }
             }
         }
         Some(())
+    }
+
+    pub fn alert(&mut self, sender: Uuid) {
+        match self {
+            Self::Player { .. } => {}
+            Self::Enemy { target, .. } => {
+                if target.is_none() {
+                    *target = Some(Target::from_uuid(sender))
+                }
+            }
+        }
     }
 
     pub fn player(
@@ -208,7 +228,7 @@ impl Controller {
         turn_cooldown_range: Range<f32>,
         strafe_multiplier_range: Range<f32>,
     ) -> Self {
-        let target = Target::default();
+        let target = None;
         let cooldown = max_shoot_cooldown;
         let turn_cooldown = 0.0;
         let strafe_multiplier = 0.0;
@@ -253,15 +273,12 @@ impl Target {
         Some(entity)
     }
 
+    pub fn try_get<'a>(target: &mut Option<Target>, app: &'a App) -> Option<&'a Entity> {
+        target.as_mut()?.get(app)
+    }
+
     pub fn set(&mut self, entity: &Entity) {
         self.uuid = entity.uuid;
-    }
-}
-
-impl Default for Target {
-    /// Will not have any target
-    fn default() -> Self {
-        Self::from_uuid(uuid::Builder::from_random_bytes([0; 16]).into_uuid())
     }
 }
 
