@@ -6,6 +6,7 @@ use crate::{
 };
 use macroquad::prelude::*;
 use nalgebra::{vector, Complex, UnitComplex, Vector2};
+use std::ops::Range;
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
@@ -20,11 +21,13 @@ pub enum Controller {
     },
     Enemy {
         speed: Vector2<f32>,
-        min_range: f32,
-        max_range: f32,
+        distance_range: Range<f32>,
         target: Target,
-        max_cooldown: f32,
+        max_shoot_cooldown: f32,
         cooldown: f32,
+        turn_cooldown: f32,
+        turn_cooldown_range: Range<f32>,
+        strafe_multiplier: f32,
     },
 }
 
@@ -109,11 +112,13 @@ impl Controller {
             }
             Self::Enemy {
                 speed,
-                min_range,
-                max_range,
+                distance_range,
                 target,
-                max_cooldown,
+                max_shoot_cooldown,
                 cooldown,
+                turn_cooldown,
+                turn_cooldown_range,
+                strafe_multiplier,
             } => {
                 entity.aim = None;
                 entity.velocity = vector![0.0, 0.0];
@@ -130,23 +135,34 @@ impl Controller {
                 };
 
                 let displacement = target_entity.position - entity.position;
-                let multiplier = if length_squared(displacement) < *min_range * *min_range {
-                    -1.0
-                } else if length_squared(displacement) > *max_range * *max_range {
-                    1.0
+                let radial_multiplier =
+                    if length_squared(displacement) < distance_range.start.powi(2) {
+                        -1.0
+                    } else if length_squared(displacement) > distance_range.end.powi(2) {
+                        1.0
+                    } else {
+                        0.0
+                    };
+
+                if *turn_cooldown > 0.0 {
+                    *turn_cooldown -= delta_seconds;
                 } else {
-                    0.0
-                };
+                    *turn_cooldown =
+                        rand::gen_range(turn_cooldown_range.start, turn_cooldown_range.end);
+                    *strafe_multiplier = rand::gen_range(-1.0, 1.0);
+                }
+
                 let direction =
                     UnitComplex::from_complex(Complex::new(displacement.x, displacement.y));
                 entity.aim = Some(direction);
-                let impulse = direction * vector![speed.x * multiplier, speed.y];
+                let impulse =
+                    direction * vector![speed.x * radial_multiplier, speed.y * *strafe_multiplier];
                 entity.velocity = impulse;
 
                 if *cooldown > 0.0 {
                     *cooldown -= delta_seconds;
                 } else {
-                    *cooldown = *max_cooldown;
+                    *cooldown = *max_shoot_cooldown;
                     app.projectiles.push(Projectile::from_speed(
                         48.0,
                         50.0,
@@ -180,16 +196,25 @@ impl Controller {
         }
     }
 
-    pub fn enemy(speed: Vector2<f32>, min_range: f32, max_range: f32, max_cooldown: f32) -> Self {
+    pub fn enemy(
+        speed: Vector2<f32>,
+        distance_range: Range<f32>,
+        max_shoot_cooldown: f32,
+        turn_cooldown_range: Range<f32>,
+    ) -> Self {
         let target = Target::default();
-        let cooldown = max_cooldown;
+        let cooldown = max_shoot_cooldown;
+        let turn_cooldown = 0.0;
+        let strafe_multiplier = 0.0;
         Self::Enemy {
             speed,
-            min_range,
-            max_range,
+            distance_range,
             target,
-            max_cooldown,
+            max_shoot_cooldown,
             cooldown,
+            turn_cooldown,
+            turn_cooldown_range,
+            strafe_multiplier,
         }
     }
 }

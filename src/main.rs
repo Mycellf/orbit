@@ -55,10 +55,10 @@ async fn main() {
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
         ],
         Some(controller::Controller::enemy(
-            vector![16.0, 8.0],
-            48.0,
-            64.0,
+            vector![16.0, 24.0],
+            48.0..64.0,
             0.5,
+            0.5..2.0,
         )),
     ));
 
