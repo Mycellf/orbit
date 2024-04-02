@@ -4,291 +4,125 @@ use crate::{
     input::{InputAxis, InputButton},
     projectile::Projectile,
 };
-use macroquad::prelude::*;
+use macroquad::prelude::rand;
 use nalgebra::{vector, Complex, UnitComplex, Vector2};
 use std::ops::Range;
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
-pub enum Controller {
-    Player {
-        speed: f32,
-        x_control: InputAxis,
-        y_control: InputAxis,
-        shoot_control: Vec<InputButton>,
-        cooldown: f32,
-        shooting_speed: f32,
-    },
-    Enemy {
-        speed: Vector2<f32>,
-        distance_range: Range<f32>,
-        target: Option<Target>,
-        max_shoot_cooldown: f32,
-        cooldown: f32,
-        turn_cooldown: f32,
-        turn_cooldown_range: Range<f32>,
-        strafe_multiplier: f32,
-        strafe_multiplier_range: Range<f32>,
-        selection_distance: f32,
-    },
+pub struct EntityController {
+    pub motion: Option<MotionController>,
+    pub shooting: Option<ShootingController>,
 }
 
-impl Controller {
-    pub fn update(entity: &mut Entity, delta_seconds: f32, app: &mut App) -> Option<()> {
-        let controller = entity.controller.as_mut()?;
-        match controller {
-            Self::Player {
-                speed,
-                x_control,
-                y_control,
-                shoot_control,
-                cooldown,
-                shooting_speed,
-            } => {
-                // Mouse aim
-                let aim = app.mouse.position - entity.position;
-                let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
-                entity.aim = Some(aim);
+impl EntityController {
+    pub fn update(entity: &mut Entity, delta_seconds: f32, app: &mut App) {
+        let controller = if let Some(controller) = entity.controller.as_mut() {
+            controller
+        } else {
+            return;
+        };
 
-                // Motion
-                x_control.update_state();
-                y_control.update_state();
-                let input = vector![x_control.as_f32(), y_control.as_f32()];
-                let input = if input.x == 0.0 {
-                    input
-                } else {
-                    input.normalize()
-                };
-                entity.velocity = input * *speed;
-
-                // Shooting
-                let shoot_pressed = shoot_control.into_iter().any(|b| b.is_down());
-                let nudged_aim = UnitComplex::new(
-                    aim.angle() + rand::gen_range(-0.15, 0.15) * (*shooting_speed - 1.0),
-                );
-
-                if *cooldown > 0.0 {
-                    *cooldown -= delta_seconds;
-                }
-                if *cooldown <= 0.0 && shoot_pressed {
-                    *cooldown = 0.5 / *shooting_speed;
-                    app.projectiles.push(Projectile::from_speed(
-                        48.0,
-                        50.0,
-                        nudged_aim,
-                        entity.position + displacement_from_angle(nudged_aim, entity.radius + 4.0),
-                        vector![1.0, 4.0],
-                        1.0,
-                        entity.color,
-                        entity.uuid,
-                    ));
-                }
-
-                if shoot_pressed {
-                    if *shooting_speed <= 2.0 {
-                        *shooting_speed += delta_seconds * 0.5;
+        if let Some(motion) = controller.motion.as_mut() {
+            match motion {
+                MotionController::Player {
+                    x_control,
+                    y_control,
+                    speed,
+                } => {
+                    x_control.update_state();
+                    y_control.update_state();
+                    let input = vector![x_control.as_f32(), y_control.as_f32()];
+                    let input = if input.x == 0.0 {
+                        input
                     } else {
-                        *shooting_speed = 2.0;
-                    }
-                } else if *shooting_speed > 1.0 {
-                    *shooting_speed -= delta_seconds;
-                } else {
-                    *shooting_speed = 1.0;
-                }
-
-                // Sync Mouse
-                use std::f32::consts::PI;
-                app.mouse.center_angle = entity.center.angle;
-                app.mouse.center_effect = entity.center.hit_effect;
-                if let Some(ring) = entity.rings.get(0) {
-                    app.mouse.ring_angle = ring.angle - PI * 3.0 / 4.0;
-                    app.mouse.set_effects_from_ring(ring);
-                } else {
-                    app.mouse.ring_angle = entity.center.angle * -0.5 - (PI * 3.0 / 4.0);
-                }
-                app.mouse.radius = (*shooting_speed - 1.0)
-                    * (length(entity.position - app.mouse.position))
-                    * 0.125;
-                app.mouse.radius = app.mouse.radius.max(0.0);
-                app.mouse.color = entity.color;
-                app.mouse.size_boost = (*cooldown * *shooting_speed * u16::MAX as f32) as u16;
-            }
-            Self::Enemy {
-                speed,
-                distance_range,
-                target,
-                max_shoot_cooldown,
-                cooldown,
-                turn_cooldown,
-                turn_cooldown_range,
-                strafe_multiplier,
-                strafe_multiplier_range,
-                selection_distance,
-            } => {
-                entity.aim = None;
-                entity.velocity = vector![0.0, 0.0];
-
-                let target_entity = match Target::try_get(target, app) {
-                    Some(target_entity) => target_entity,
-                    None => {
-                        let target_entity = (&app.entities).into_iter().find(|e| {
-                            e.color != entity.color
-                                && length_squared(e.position - entity.position)
-                                    < selection_distance.powi(2)
-                        });
-                        if let Some(target_entity) = target_entity {
-                            *target = Some(Target::from_uuid(target_entity.uuid));
-
-                            target_entity
-                        } else {
-                            *target = None;
-                            return Some(());
-                        }
-                    }
-                };
-
-                let displacement = target_entity.position - entity.position;
-                let radial_multiplier =
-                    if length_squared(displacement) < distance_range.start.powi(2) {
-                        -1.0
-                    } else if length_squared(displacement) > distance_range.end.powi(2) {
-                        1.0
-                    } else {
-                        0.0
+                        input.normalize()
                     };
-
-                if *turn_cooldown > 0.0 {
-                    *turn_cooldown -= delta_seconds;
-                } else {
-                    *turn_cooldown =
-                        rand::gen_range(turn_cooldown_range.start, turn_cooldown_range.end);
-                    *strafe_multiplier =
-                        rand::gen_range(strafe_multiplier_range.start, strafe_multiplier_range.end);
-                    *strafe_multiplier *= if rand::rand() & 1 > 0 { 1.0 } else { -1.0 };
-                }
-
-                let direction =
-                    UnitComplex::from_complex(Complex::new(displacement.x, displacement.y));
-                entity.aim = Some(direction);
-                let impulse =
-                    direction * vector![speed.x * radial_multiplier, speed.y * *strafe_multiplier];
-                entity.velocity = impulse;
-
-                if *cooldown > 0.0 {
-                    *cooldown -= delta_seconds;
-                } else {
-                    *cooldown =
-                        *max_shoot_cooldown * if entity.rings.len() > 0 { 1.0 } else { 1.5 };
-                    app.projectiles.push(Projectile::from_speed(
-                        48.0,
-                        50.0,
-                        direction,
-                        entity.position + displacement_from_angle(direction, entity.radius + 4.0),
-                        vector![1.0, 4.0],
-                        1.0,
-                        entity.color,
-                        entity.uuid,
-                    ));
+                    entity.velocity = input * *speed;
                 }
             }
         }
-        Some(())
-    }
 
-    pub fn alert(&mut self, sender: Uuid) {
-        match self {
-            Self::Player { .. } => {}
-            Self::Enemy { target, .. } => {
-                if target.is_none() {
-                    *target = Some(Target::from_uuid(sender))
+        if let Some(shooting) = controller.shooting.as_mut() {
+            match shooting {
+                ShootingController::Player {
+                    control,
+                    cooldown,
+                    state,
+                    speed,
+                    precision,
+                    delay,
+                } => {
+                    let input = control.into_iter().any(|b| b.is_down());
+
+                    let aim = app.mouse.position - entity.position;
+                    let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
+                    entity.aim = Some(aim);
+
+                    *cooldown = (*cooldown - delta_seconds).max(0.0);
+                    if input && *cooldown <= 0.0 {
+                        *cooldown = lerp(speed, *state);
+                        let nudged_aim = UnitComplex::new(
+                            aim.angle() + rand::gen_range(-1.0, 1.0) * lerp(precision, *state),
+                        );
+                        app.projectiles.push(Projectile::from_speed(
+                            48.0,
+                            50.0,
+                            nudged_aim,
+                            entity.position
+                                + displacement_from_angle(nudged_aim, entity.radius + 4.0),
+                            vector![1.0, 4.0],
+                            1.0,
+                            entity.color,
+                            entity.uuid,
+                        ));
+                    }
+
+                    *state += delta_seconds / if input { delay.start } else { -delay.end };
+                    *state = state.clamp(0.0, 1.0);
+
+                    // Sync mouse
+                    use std::f32::consts::PI;
+                    app.mouse.center_angle = entity.center.angle;
+                    app.mouse.center_effect = entity.center.hit_effect;
+                    if let Some(ring) = entity.rings.get(0) {
+                        app.mouse.ring_angle = ring.angle - PI * 3.0 / 4.0;
+                        app.mouse.set_effects_from_ring(ring);
+                    } else {
+                        app.mouse.ring_angle = entity.center.angle * -0.5 - (PI * 3.0 / 4.0);
+                    }
+                    app.mouse.radius =
+                        *state * (length(entity.position - app.mouse.position)) * 0.125;
+                    app.mouse.radius = app.mouse.radius.max(0.0);
+                    app.mouse.color = entity.color;
+                    app.mouse.size_boost = (*cooldown * 1.0 * u16::MAX as f32) as u16;
                 }
             }
         }
     }
 
-    pub fn player(
-        speed: f32,
+    pub fn alert(&mut self, sender: Uuid) {}
+}
+
+#[derive(Clone, Debug)]
+pub enum MotionController {
+    Player {
         x_control: InputAxis,
         y_control: InputAxis,
-        shoot_control: Vec<InputButton>,
-    ) -> Self {
-        let cooldown = 0.0;
-        let shooting_speed = 1.0;
-        Self::Player {
-            speed,
-            x_control,
-            y_control,
-            shoot_control,
-            cooldown,
-            shooting_speed,
-        }
-    }
-
-    pub fn enemy(
-        speed: Vector2<f32>,
-        distance_range: Range<f32>,
-        max_shoot_cooldown: f32,
-        turn_cooldown_range: Range<f32>,
-        strafe_multiplier_range: Range<f32>,
-        selection_distance: f32,
-    ) -> Self {
-        let target = None;
-        let cooldown = max_shoot_cooldown;
-        let turn_cooldown = 0.0;
-        let strafe_multiplier = 0.0;
-        Self::Enemy {
-            speed,
-            distance_range,
-            target,
-            max_shoot_cooldown,
-            cooldown,
-            turn_cooldown,
-            turn_cooldown_range,
-            strafe_multiplier,
-            strafe_multiplier_range,
-            selection_distance,
-        }
-    }
+        speed: f32,
+    },
 }
 
-#[derive(Clone, Copy, Debug)]
-pub struct Target {
-    pub uuid: Uuid,
-    pub index: usize,
-}
-
-impl Target {
-    pub fn from_uuid(uuid: Uuid) -> Self {
-        let index = 0;
-        Self { uuid, index }
-    }
-
-    pub fn get<'a>(&mut self, app: &'a App) -> Option<&'a Entity> {
-        if let Some(entity) = app.entities.get(self.index) {
-            if entity.uuid == self.uuid {
-                return Some(entity);
-            }
-        }
-
-        let (index, entity) = (&app.entities)
-            .into_iter()
-            .enumerate()
-            .find(|e| e.1.uuid == self.uuid)?;
-        self.index = index;
-        Some(entity)
-    }
-
-    pub fn try_get<'a>(target: &mut Option<Target>, app: &'a App) -> Option<&'a Entity> {
-        target.as_mut()?.get(app)
-    }
-
-    pub fn set(&mut self, entity: &Entity) {
-        self.uuid = entity.uuid;
-    }
-}
-
-fn displacement_from_angle(angle: UnitComplex<f32>, distance: f32) -> Vector2<f32> {
-    vector![angle.re, angle.im] * distance
+#[derive(Clone, Debug)]
+pub enum ShootingController {
+    Player {
+        control: Vec<InputButton>,
+        cooldown: f32,
+        state: f32,
+        speed: Range<f32>,
+        precision: Range<f32>,
+        delay: Range<f32>,
+    },
 }
 
 fn length(vector: Vector2<f32>) -> f32 {
@@ -296,5 +130,13 @@ fn length(vector: Vector2<f32>) -> f32 {
 }
 
 fn length_squared(vector: Vector2<f32>) -> f32 {
-    vector.x * vector.x + vector.y * vector.y
+    vector.x.powi(2) + vector.y.powi(2)
+}
+
+fn lerp(range: &mut Range<f32>, interpolation: f32) -> f32 {
+    range.start + (range.end - range.start) * interpolation
+}
+
+fn displacement_from_angle(angle: UnitComplex<f32>, distance: f32) -> Vector2<f32> {
+    vector![angle.re, angle.im] * distance
 }

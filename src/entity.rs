@@ -1,7 +1,7 @@
 use crate::{
     app::App,
     components::{ArmorRing, Center},
-    controller::Controller,
+    controller::EntityController,
 };
 use macroquad::prelude::*;
 use nalgebra::{Point2, UnitComplex, Vector2};
@@ -16,7 +16,7 @@ pub struct Entity {
     pub aim: Option<UnitComplex<f32>>,
     pub radius: f32,
     pub color: Color,
-    pub controller: Option<Controller>,
+    pub controller: Option<EntityController>,
     pub uuid: Uuid,
 }
 
@@ -26,7 +26,7 @@ impl Entity {
         color: Color,
         center: Center,
         rings: Vec<ArmorRing>,
-        controller: Option<Controller>,
+        controller: Option<EntityController>,
     ) -> Self {
         let aim = None;
         let radius = Self::get_radius_squared(&rings, &center).sqrt();
@@ -87,7 +87,7 @@ impl Entity {
             ring.update(delta_seconds);
         }
 
-        Controller::update(self, delta_seconds, app);
+        EntityController::update(self, delta_seconds, app);
 
         self.position += self.velocity * delta_seconds;
     }

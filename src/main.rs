@@ -30,21 +30,30 @@ async fn main() {
             components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
             // *A gift to rustfmt to keep it from messing this code up*
         ],
-        Some(controller::Controller::player(
-            36.0,
-            input::InputAxis::from_inputs(
-                vec![KeyCode::D.into(), KeyCode::Right.into()],
-                vec![KeyCode::A.into(), KeyCode::Left.into()],
-            ),
-            input::InputAxis::from_inputs(
-                vec![KeyCode::S.into(), KeyCode::Down.into()],
-                vec![KeyCode::W.into(), KeyCode::Up.into()],
-            ),
-            vec![
-                input::InputButton::Mouse(MouseButton::Left),
-                input::InputButton::Keyboard(KeyCode::Space),
-            ],
-        )),
+        Some(controller::EntityController {
+            motion: Some(controller::MotionController::Player {
+                x_control: input::InputAxis::from_inputs(
+                    vec![KeyCode::D.into(), KeyCode::Right.into()],
+                    vec![KeyCode::A.into(), KeyCode::Left.into()],
+                ),
+                y_control: input::InputAxis::from_inputs(
+                    vec![KeyCode::S.into(), KeyCode::Down.into()],
+                    vec![KeyCode::W.into(), KeyCode::Up.into()],
+                ),
+                speed: 36.0,
+            }),
+            shooting: Some(controller::ShootingController::Player {
+                control: vec![
+                    input::InputButton::Keyboard(KeyCode::Space),
+                    input::InputButton::Mouse(MouseButton::Left),
+                ],
+                cooldown: 0.0,
+                state: 0.0,
+                speed: 0.5..0.25,
+                precision: 0.0..0.15,
+                delay: 1.0..2.0,
+            }),
+        }),
     ));
     app.entities.push(entity::Entity::from_rings(
         point![64.0, 16.0],
@@ -54,14 +63,7 @@ async fn main() {
             components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
         ],
-        Some(controller::Controller::enemy(
-            vector![16.0, 24.0],
-            48.0..64.0,
-            0.5,
-            0.5..2.0,
-            0.1..1.0,
-            96.0,
-        )),
+        None,
     ));
 
     show_mouse(false);
