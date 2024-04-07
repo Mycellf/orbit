@@ -10,8 +10,8 @@ macroquad = "0.4"
 nalgebra = { version = "0.32", features = ["convert-glam021"] }
 bincode = "1.3"
 uuid = { version = "1.8", features = ["v4", "fast-rng", "macro-diagnostics"] }
-[profile.dev]
 
+[profile.dev]
 opt-level = 1
 
 [profile.dev.package."*"]
