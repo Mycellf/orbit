@@ -1,6 +1,7 @@
 use crate::{entity::Entity, mouse_display::MouseDisplay, projectile::Projectile};
 use macroquad::prelude::*;
 use std::time::Instant;
+use thunderdome::Arena;
 
 pub struct App {
     pub timestep_length: f32,
@@ -8,8 +9,8 @@ pub struct App {
     pub last_frame: Instant,
     pub frame_time: f32,
     pub camera: Camera2D,
-    pub entities: Vec<Entity>,
-    pub projectiles: Vec<Projectile>,
+    pub entities: Arena<Entity>,
+    pub projectiles: Arena<Projectile>,
     pub mouse: MouseDisplay,
 }
 
@@ -24,8 +25,8 @@ impl App {
             zoom: Vec2::splat(1.0 / 64.0),
             ..Default::default()
         };
-        let entities = Vec::new();
-        let projectiles = Vec::new();
+        let entities = Arena::new();
+        let projectiles = Arena::new();
         let mouse = MouseDisplay::from_speed(-PI / 3.0, PI / 6.0);
         Self {
             timestep_length,
@@ -44,11 +45,11 @@ impl App {
         update_camera(&mut self.camera);
 
         let frame_time = self.frame_time.max(self.timestep_length);
-        for projectile in &self.projectiles {
+        for (_, projectile) in &self.projectiles {
             projectile.draw(frame_time);
         }
 
-        for entity in &self.entities {
+        for (_, entity) in &self.entities {
             entity.draw();
         }
 
@@ -74,16 +75,18 @@ impl App {
         unsafe {
             let app = &mut *(self as *mut App); // Nececary due to the borrow checker
 
-            for i in (0..self.projectiles.len()).rev() {
-                if self.projectiles[i]
-                    .update(self.timestep_length, app)
-                    .is_none()
-                {
-                    self.projectiles.swap_remove(i);
+            let mut to_remove = Vec::new();
+            for (index, projectile) in &mut self.projectiles {
+                if projectile.update(self.timestep_length, app).is_none() {
+                    to_remove.push(index);
                 }
             }
 
-            for entity in &mut self.entities {
+            for index in to_remove {
+                self.projectiles.remove(index);
+            }
+
+            for (_, entity) in &mut self.entities {
                 entity.update(self.timestep_length, app);
             }
         }

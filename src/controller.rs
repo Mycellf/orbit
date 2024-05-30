@@ -65,7 +65,7 @@ impl EntityController {
                         let nudged_aim = UnitComplex::new(
                             aim.angle() + rand::gen_range(-1.0, 1.0) * lerp(precision, *state),
                         );
-                        app.projectiles.push(Projectile::from_speed(
+                        app.projectiles.insert(Projectile::from_speed(
                             48.0,
                             50.0,
                             nudged_aim,

@@ -61,20 +61,26 @@ impl Projectile {
 
         // Collision
         let collider = self.get_collider(delta_seconds);
-        for i in (0..app.entities.len()).rev() {
-            let entity = &mut app.entities[i];
+
+        let mut hit = None;
+        for (index, entity) in &mut app.entities {
             if entity.color != self.color
                 && self
                     .check_collisions_with_entity(&collider, entity, self.angle)
                     .is_some()
             {
-                if entity.check_deletion().is_none() {
-                    app.entities.swap_remove(i);
-                }
-                return None;
+                hit = Some(index);
+                break;
             }
         }
-        Some(())
+        if let Some(hit) = hit {
+            if app.entities[hit].check_deletion().is_none() {
+                app.entities.remove(hit);
+            }
+            None
+        } else {
+            Some(())
+        }
     }
 
     pub fn draw(&self, frame_time: f32) {
