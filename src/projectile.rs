@@ -1,7 +1,7 @@
 use crate::{app::App, collision::Rectangle, components::Armor, entity::Entity};
 use macroquad::prelude::*;
 use nalgebra::{distance_squared, vector, Point2, UnitComplex, Vector2};
-use uuid::Uuid;
+use thunderdome::Index;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Projectile {
@@ -13,7 +13,7 @@ pub struct Projectile {
     pub age: f32,
     pub size: Vector2<f32>,
     pub color: Color,
-    pub sender: Uuid,
+    pub sender: Index,
 }
 
 impl Projectile {
@@ -25,7 +25,7 @@ impl Projectile {
         size: Vector2<f32>,
         lifetime: f32,
         color: Color,
-        sender: Uuid,
+        sender: Index,
     ) -> Self {
         let age = 0.0;
         Self {

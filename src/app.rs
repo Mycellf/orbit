@@ -86,8 +86,8 @@ impl App {
                 self.projectiles.remove(index);
             }
 
-            for (_, entity) in &mut self.entities {
-                entity.update(self.timestep_length, app);
+            for (index, entity) in &mut self.entities {
+                entity.update(index, self.timestep_length, app);
             }
         }
     }

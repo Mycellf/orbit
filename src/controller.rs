@@ -7,7 +7,7 @@ use crate::{
 use macroquad::prelude::rand;
 use nalgebra::{vector, Complex, UnitComplex, Vector2};
 use std::ops::Range;
-use uuid::Uuid;
+use thunderdome::Index;
 
 #[derive(Clone, Debug)]
 pub struct EntityController {
@@ -16,7 +16,7 @@ pub struct EntityController {
 }
 
 impl EntityController {
-    pub fn update(entity: &mut Entity, delta_seconds: f32, app: &mut App) {
+    pub fn update(entity: &mut Entity, index: Index, delta_seconds: f32, app: &mut App) {
         let controller = if let Some(controller) = entity.controller.as_mut() {
             controller
         } else {
@@ -74,7 +74,7 @@ impl EntityController {
                             vector![1.0, 4.0],
                             1.0,
                             entity.color,
-                            entity.uuid,
+                            index,
                         ));
                     }
 
@@ -101,7 +101,7 @@ impl EntityController {
         }
     }
 
-    pub fn alert(&mut self, sender: Uuid) {}
+    pub fn alert(&mut self, sender: Index) {}
 }
 
 #[derive(Clone, Debug)]

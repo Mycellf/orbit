@@ -5,7 +5,7 @@ use crate::{
 };
 use macroquad::prelude::*;
 use nalgebra::{Point2, UnitComplex, Vector2};
-use uuid::Uuid;
+use thunderdome::Index;
 
 #[derive(Clone, Debug)]
 pub struct Entity {
@@ -17,7 +17,6 @@ pub struct Entity {
     pub radius: f32,
     pub color: Color,
     pub controller: Option<EntityController>,
-    pub uuid: Uuid,
 }
 
 impl Entity {
@@ -31,7 +30,6 @@ impl Entity {
         let aim = None;
         let radius = Self::get_radius_squared(&rings, &center).sqrt();
         let velocity = Default::default();
-        let uuid = Uuid::new_v4();
         Self {
             rings,
             center,
@@ -41,7 +39,6 @@ impl Entity {
             radius,
             color,
             controller,
-            uuid,
         }
     }
 
@@ -81,13 +78,13 @@ impl Entity {
         }
     }
 
-    pub fn update(&mut self, delta_seconds: f32, app: &mut App) {
+    pub fn update(&mut self, index: Index, delta_seconds: f32, app: &mut App) {
         self.center.update(delta_seconds);
         for ring in &mut *self.rings {
             ring.update(delta_seconds);
         }
 
-        EntityController::update(self, delta_seconds, app);
+        EntityController::update(self, index, delta_seconds, app);
 
         self.position += self.velocity * delta_seconds;
     }
