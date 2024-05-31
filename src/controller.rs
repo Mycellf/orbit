@@ -4,8 +4,8 @@ use crate::{
     input::{InputAxis, InputButton},
     projectile::Projectile,
 };
-use macroquad::prelude::rand;
-use nalgebra::{vector, Complex, UnitComplex, Vector2};
+use macroquad::{color::Color, prelude::rand};
+use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
 use std::ops::Range;
 use thunderdome::Index;
 
@@ -65,17 +65,14 @@ impl EntityController {
                         let nudged_aim = UnitComplex::new(
                             aim.angle() + rand::gen_range(-1.0, 1.0) * lerp(precision, *state),
                         );
-                        app.projectiles.insert(Projectile::from_speed(
-                            48.0,
-                            50.0,
+                        insert_projectile(
+                            app,
                             nudged_aim,
-                            entity.position
-                                + displacement_from_angle(nudged_aim, entity.radius + 4.0),
-                            vector![1.0, 4.0],
-                            1.0,
+                            entity.position,
+                            entity.radius + 4.0,
                             entity.color,
                             index,
-                        ));
+                        );
                     }
 
                     *state += delta_seconds / if input { delay.start } else { -delay.end };
@@ -124,6 +121,26 @@ pub enum ShootingController {
         precision: Range<f32>,
         delay: Range<f32>,
     },
+}
+
+fn insert_projectile(
+    app: &mut App,
+    aim: UnitComplex<f32>,
+    position: Point2<f32>,
+    offset_radius: f32,
+    color: Color,
+    sender: Index,
+) {
+    app.projectiles.insert(Projectile::from_speed(
+        48.0,
+        50.0,
+        aim,
+        position + displacement_from_angle(aim, offset_radius),
+        vector![1.0, 4.0],
+        1.0,
+        color,
+        sender,
+    ));
 }
 
 fn length(vector: Vector2<f32>) -> f32 {
