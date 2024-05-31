@@ -57,6 +57,12 @@ impl MouseDisplay {
         }
     }
 
+    pub fn set_effects_from_empty_ring(&mut self) {
+        for effect in &mut self.corner_effects {
+            *effect = u16::MAX;
+        }
+    }
+
     pub fn draw(&self) {
         use std::f32::consts::{PI, SQRT_2};
 
