@@ -43,9 +43,14 @@ async fn main() {
                 speed: 36.0,
             }),
             shooting: Some(controller::ShootingController::Player {
-                control: vec![
+                shoot_control: vec![
                     input::InputButton::Keyboard(KeyCode::Space),
                     input::InputButton::Mouse(MouseButton::Left),
+                ],
+                precise_shoot_control: vec![
+                    input::InputButton::Keyboard(KeyCode::RightAlt),
+                    input::InputButton::Keyboard(KeyCode::LeftAlt),
+                    input::InputButton::Mouse(MouseButton::Right),
                 ],
                 cooldown: 0.0,
                 state: 0.0,

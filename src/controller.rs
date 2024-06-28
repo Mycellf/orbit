@@ -46,14 +46,20 @@ impl EntityController {
         if let Some(shooting) = controller.shooting.as_mut() {
             match shooting {
                 ShootingController::Player {
-                    control,
+                    shoot_control,
+                    precise_shoot_control,
                     cooldown,
                     state,
                     speed,
                     precision,
                     delay,
                 } => {
-                    let input = control.into_iter().any(|b| b.is_down());
+                    let shoot_input = shoot_control.into_iter().any(|b| b.is_down());
+                    let precise_shoot_input =
+                        precise_shoot_control.into_iter().any(|b| b.is_down());
+
+                    let input = shoot_input || precise_shoot_input;
+                    let accelerate_input = shoot_input;
 
                     let aim = app.mouse.position - entity.position;
                     let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
@@ -75,7 +81,7 @@ impl EntityController {
                         );
                     }
 
-                    *state += delta_seconds / if input { delay.start } else { -delay.end };
+                    *state += delta_seconds / if shoot_input { delay.start } else { -delay.end };
                     *state = state.clamp(0.0, 1.0);
 
                     // Sync mouse
@@ -114,7 +120,8 @@ pub enum MotionController {
 #[derive(Clone, Debug)]
 pub enum ShootingController {
     Player {
-        control: Vec<InputButton>,
+        shoot_control: Vec<InputButton>,
+        precise_shoot_control: Vec<InputButton>,
         cooldown: f32,
         state: f32,
         speed: Range<f32>,
