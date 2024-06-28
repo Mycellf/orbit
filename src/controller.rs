@@ -59,7 +59,7 @@ impl EntityController {
                         precise_shoot_control.into_iter().any(|b| b.is_down());
 
                     let input = shoot_input || precise_shoot_input;
-                    let accelerate_input = shoot_input;
+                    let accelerate = shoot_input;
 
                     let aim = app.mouse.position - entity.position;
                     let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
@@ -81,7 +81,7 @@ impl EntityController {
                         );
                     }
 
-                    *state += delta_seconds / if shoot_input { delay.start } else { -delay.end };
+                    *state += delta_seconds / if accelerate { delay.start } else { -delay.end };
                     *state = state.clamp(0.0, 1.0);
 
                     // Sync mouse
