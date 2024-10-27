@@ -21,7 +21,8 @@ pub struct EntityController {
 
 impl EntityController {
     pub fn update(entity: &mut Entity, index: Index, delta_seconds: f32, app: &mut App) {
-        let entity_unsafe_borrow = unsafe { &mut *(entity as *mut Entity) };
+        let entity_unsafe_borrow = unsafe { &mut *(entity as *mut Entity) }; // causes UB if safety
+                                                                             // rules are broken
 
         let controller = if let Some(controller) = entity.controller.as_mut() {
             controller
