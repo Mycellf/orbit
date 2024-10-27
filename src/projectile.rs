@@ -62,9 +62,11 @@ impl Projectile {
         // Collision
         let collider = self.get_collider(delta_seconds);
 
+        let team = app.entities[self.sender].team;
+
         let mut hit = None;
         for (index, entity) in &mut app.entities {
-            if entity.color != self.color
+            if entity.team != team
                 && self
                     .check_collisions_with_entity(&collider, entity, self.angle)
                     .is_some()
