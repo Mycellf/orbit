@@ -1,7 +1,7 @@
 use crate::{
     app::App,
     entity::Entity,
-    player_input::{PlayerMotionController, PlayerShootingController},
+    player_controllers::{PlayerMotionController, PlayerShootingController},
 };
 use nalgebra::UnitComplex;
 use thunderdome::Index;
