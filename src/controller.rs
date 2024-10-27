@@ -5,6 +5,13 @@ use crate::{
 };
 use thunderdome::Index;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Team {
+    Player,
+    Neutral,
+    Hostile,
+}
+
 #[derive(Clone, Debug)]
 pub struct EntityController {
     pub motion: Option<MotionController>,

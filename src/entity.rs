@@ -1,7 +1,7 @@
 use crate::{
     app::App,
     components::{ArmorRing, Center},
-    controller::EntityController,
+    controller::{EntityController, Team},
 };
 use macroquad::prelude::*;
 use nalgebra::{Point2, UnitComplex, Vector2};
@@ -17,6 +17,7 @@ pub struct Entity {
     pub radius: f32,
     pub color: Color,
     pub controller: Option<EntityController>,
+    pub team: Team,
 }
 
 impl Entity {
@@ -26,6 +27,7 @@ impl Entity {
         center: Center,
         rings: Vec<ArmorRing>,
         controller: Option<EntityController>,
+        team: Team,
     ) -> Self {
         let aim = None;
         let radius = Self::get_radius_squared(&rings, &center).sqrt();
@@ -39,6 +41,7 @@ impl Entity {
             radius,
             color,
             controller,
+            team,
         }
     }
 

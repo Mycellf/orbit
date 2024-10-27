@@ -37,6 +37,7 @@ async fn main() {
             motion: Some(controller::MotionController::Player(Default::default())),
             shooting: Some(controller::ShootingController::Player(Default::default())),
         }),
+        controller::Team::Player,
     ));
 
     app.entities.insert(entity::Entity::from_rings(
@@ -48,6 +49,7 @@ async fn main() {
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
         ],
         None,
+        controller::Team::Hostile,
     ));
 
     show_mouse(false);
