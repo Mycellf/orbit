@@ -40,7 +40,7 @@ impl MouseDisplay {
 
     pub fn update_mouse_position(&mut self, camera: &Camera2D) {
         let position = mouse_position_local() / camera.zoom + camera.target;
-        self.position = position.into();
+        self.position = point![position.x, position.y];
     }
 
     pub fn set_effects_from_ring(&mut self, ring: &crate::components::ArmorRing) {
