@@ -15,6 +15,8 @@ pub struct App {
 }
 
 impl App {
+    pub const MAX_UPDATES_PER_FRAME: usize = 5;
+
     pub fn from_ups(updates_per_second: f32) -> Self {
         use std::f32::consts::PI;
         let timestep_length = 1.0 / updates_per_second;
@@ -64,7 +66,7 @@ impl App {
         self.mouse.update_mouse_position(&self.camera);
 
         let updates = (self.update_time / self.timestep_length) as usize;
-        for _ in 0..updates.min(5) {
+        for _ in 0..updates.min(Self::MAX_UPDATES_PER_FRAME) {
             self.run_timestep();
         }
 
