@@ -3,6 +3,7 @@ use crate::{
     entity::Entity,
     player_input::{PlayerMotionController, PlayerShootingController},
 };
+use nalgebra::UnitComplex;
 use thunderdome::Index;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -63,4 +64,16 @@ pub enum MotionController {
 pub enum ShootingController {
     Player(PlayerShootingController),
     Computer {},
+}
+
+impl ShootingController {
+    pub fn aim(&self) -> Option<(UnitComplex<f32>, f32)> {
+        match self {
+            Self::Player(controller) => Some((
+                controller.aim,
+                controller.cooldown / controller.max_cooldown(),
+            )),
+            _ => None,
+        }
+    }
 }

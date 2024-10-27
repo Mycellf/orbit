@@ -59,6 +59,7 @@ pub struct PlayerShootingController {
     pub speed: Range<f32>,
     pub precision: Range<f32>,
     pub delay: Range<f32>,
+    pub aim: UnitComplex<f32>,
 }
 
 impl PlayerShootingController {
@@ -71,11 +72,11 @@ impl PlayerShootingController {
 
         let aim = app.mouse.position - entity.position;
         let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
-        entity.aim = Some(aim);
+        self.aim = aim;
 
         self.cooldown = (self.cooldown - delta_seconds).max(0.0);
         if input && self.cooldown <= 0.0 {
-            self.cooldown = lerp(&self.speed, self.state);
+            self.cooldown = self.max_cooldown();
             let nudged_aim = UnitComplex::new(
                 aim.angle() + rand::gen_range(-1.0, 1.0) * lerp(&self.precision, self.state),
             );
@@ -113,6 +114,10 @@ impl PlayerShootingController {
         app.mouse.color = entity.color;
         app.mouse.size_boost = (self.cooldown * 1.0 * u16::MAX as f32) as u16;
     }
+
+    pub fn max_cooldown(&self) -> f32 {
+        lerp(&self.speed, self.state)
+    }
 }
 
 impl Default for PlayerShootingController {
@@ -132,6 +137,7 @@ impl Default for PlayerShootingController {
             speed: 0.5..0.25,
             precision: 0.0..0.15,
             delay: 1.0..2.0,
+            aim: Default::default(),
         }
     }
 }

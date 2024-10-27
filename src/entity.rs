@@ -4,7 +4,7 @@ use crate::{
     controller::{EntityController, Team},
 };
 use macroquad::prelude::*;
-use nalgebra::{Point2, UnitComplex, Vector2};
+use nalgebra::{Point2, Vector2};
 use thunderdome::Index;
 
 #[derive(Clone, Debug)]
@@ -13,7 +13,6 @@ pub struct Entity {
     pub center: Center,
     pub position: Point2<f32>,
     pub velocity: Vector2<f32>,
-    pub aim: Option<UnitComplex<f32>>,
     pub radius: f32,
     pub color: Color,
     pub controller: Option<EntityController>,
@@ -29,7 +28,6 @@ impl Entity {
         controller: Option<EntityController>,
         team: Team,
     ) -> Self {
-        let aim = None;
         let radius = Self::get_radius_squared(&rings, &center).sqrt();
         let velocity = Default::default();
         Self {
@@ -37,7 +35,6 @@ impl Entity {
             center,
             position,
             velocity,
-            aim,
             radius,
             color,
             controller,
@@ -53,8 +50,24 @@ impl Entity {
             ring.draw_around(self.position, self.color);
         }
 
-        if let Some(aim) = self.aim {
-            let radius = self.radius + 4.0;
+        'draw_arrow: {
+            let Some(controller) = &self.controller else {
+                break 'draw_arrow;
+            };
+
+            let Some(controller) = &controller.shooting else {
+                break 'draw_arrow;
+            };
+
+            let Some((aim, cooldown)) = controller.aim() else {
+                break 'draw_arrow;
+            };
+
+            let radius = self.radius + 4.0 - 2.0 * cooldown;
+            let color = Color {
+                a: 1.0 - (cooldown * 0.75),
+                ..self.color
+            };
 
             draw_rectangle_ex(
                 self.position.x + radius * aim.re,
@@ -64,7 +77,7 @@ impl Entity {
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
                     rotation: aim.angle() + PI / 4.0,
-                    color: self.color,
+                    color,
                 },
             );
             draw_rectangle_ex(
@@ -75,7 +88,7 @@ impl Entity {
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
                     rotation: aim.angle() + PI / 4.0,
-                    color: self.color,
+                    color,
                 },
             );
         }
