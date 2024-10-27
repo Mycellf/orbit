@@ -18,7 +18,7 @@ impl App {
     pub const MAX_UPDATES_PER_FRAME: usize = 5;
 
     pub fn from_ups(updates_per_second: f32) -> Self {
-        use std::f32::consts::PI;
+        use std::f32::consts::TAU;
         let timestep_length = 1.0 / updates_per_second;
         let update_time = 0.0;
         let last_frame = Instant::now();
@@ -29,7 +29,7 @@ impl App {
         };
         let entities = Arena::new();
         let projectiles = Arena::new();
-        let mouse = MouseDisplay::from_speed(-PI / 3.0, PI / 6.0);
+        let mouse = MouseDisplay::from_speed(-TAU / 6.0, TAU / 12.0);
         Self {
             timestep_length,
             update_time,

@@ -43,7 +43,7 @@ impl Entity {
     }
 
     pub fn draw(&self) {
-        use std::f32::consts::PI;
+        use std::f32::consts::TAU;
 
         self.center.draw_around(self.position, WHITE);
         for ring in &*self.rings {
@@ -76,7 +76,7 @@ impl Entity {
                 0.75,
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
-                    rotation: aim.angle() + PI / 4.0,
+                    rotation: aim.angle() + TAU / 8.0,
                     color,
                 },
             );
@@ -87,7 +87,7 @@ impl Entity {
                 2.0,
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
-                    rotation: aim.angle() + PI / 4.0,
+                    rotation: aim.angle() + TAU / 8.0,
                     color,
                 },
             );

@@ -64,7 +64,7 @@ impl MouseDisplay {
     }
 
     pub fn draw(&self) {
-        use std::f32::consts::{PI, SQRT_2};
+        use std::f32::consts::{SQRT_2, TAU};
 
         draw_rectangle_ex(
             self.position.x,
@@ -83,7 +83,7 @@ impl MouseDisplay {
 
         let size_boost = self.size_boost as f32 / u16::MAX as f32 * 1.25;
 
-        let angle = UnitComplex::new(self.ring_angle + PI / 4.0);
+        let angle = UnitComplex::new(self.ring_angle + TAU / 8.0);
         let radius = self.radius + 0.5 + (size_boost * SQRT_2 / 2.0);
         for (i, (x, y)) in get_rotations_of(angle.re * radius, angle.im * radius)
             .into_iter()

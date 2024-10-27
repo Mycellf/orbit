@@ -99,14 +99,14 @@ impl PlayerShootingController {
         self.state = self.state.clamp(0.0, 1.0);
 
         // Sync mouse
-        use std::f32::consts::PI;
+        use std::f32::consts::TAU;
         app.mouse.center_angle = entity.center.angle;
         app.mouse.center_effect = entity.center.hit_effect;
         if let Some(ring) = entity.rings.get(0) {
-            app.mouse.ring_angle = ring.angle - PI * 3.0 / 4.0;
+            app.mouse.ring_angle = ring.angle - TAU * 3.0 / 8.0;
             app.mouse.set_effects_from_ring(ring);
         } else {
-            app.mouse.ring_angle = entity.center.angle * -0.5 - (PI * 3.0 / 4.0);
+            app.mouse.ring_angle = entity.center.angle * -0.5 - (TAU * 3.0 / 8.0);
             app.mouse.set_effects_from_empty_ring();
         }
         app.mouse.radius = self.state * (length(entity.position - app.mouse.position)) * 0.125;

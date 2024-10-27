@@ -56,9 +56,9 @@ impl ArmorRing {
     }
 
     pub fn update(&mut self, delta_seconds: f32) {
-        use std::f32::consts::PI;
+        use std::f32::consts::TAU;
         self.angle += self.speed * delta_seconds;
-        self.angle %= 2.0 * PI;
+        self.angle %= TAU;
 
         for armor in &mut self.armor {
             if let Some(armor) = armor {
@@ -76,8 +76,8 @@ impl ArmorRing {
     }
 
     pub fn get_increment(&self) -> f32 {
-        use std::f32::consts::PI;
-        (2.0 * PI) / self.armor.len() as f32
+        use std::f32::consts::TAU;
+        TAU / self.armor.len() as f32
     }
 
     pub fn get_colliders(&self, position: Point2<f32>) -> Vec<Option<Rectangle>> {
@@ -150,9 +150,9 @@ impl Center {
     }
 
     pub fn update(&mut self, delta_seconds: f32) {
-        use std::f32::consts::PI;
+        use std::f32::consts::TAU;
         self.angle += self.speed * delta_seconds;
-        self.angle %= 2.0 * PI;
+        self.angle %= TAU;
         self.update_hit_effect(delta_seconds);
     }
 

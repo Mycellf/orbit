@@ -21,16 +21,16 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    use std::f32::consts::PI;
+    use std::f32::consts::TAU;
 
     let mut app = app::App::from_ups(120.0);
 
     app.entities.insert(entity::Entity::from_rings(
         point![-64.0, -16.0],
         Color::from_hex(0x0000ff),
-        components::Center::from_size(vector![2.0, 2.0], 8, -PI / 3.0),
+        components::Center::from_size(vector![2.0, 2.0], 8, -TAU / 6.0),
         vec![
-            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, PI / 6.0),
+            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, TAU / 12.0),
             // *A gift to rustfmt to keep it from messing this code up*
         ],
         Some(controller::EntityController {
@@ -43,10 +43,10 @@ async fn main() {
     app.entities.insert(entity::Entity::from_rings(
         point![64.0, 16.0],
         Color::from_hex(0xff0000),
-        components::Center::from_size(vector![2.0, 2.0], 8, PI / 3.0),
+        components::Center::from_size(vector![2.0, 2.0], 8, TAU / 6.0),
         vec![
-            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -PI / 6.0),
-            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, PI / 12.0),
+            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -TAU / 12.0),
+            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, TAU / 24.0),
         ],
         None,
         controller::Team::Hostile,
