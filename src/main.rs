@@ -22,7 +22,9 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     use std::f32::consts::PI;
+
     let mut app = app::App::from_ups(120.0);
+
     app.entities.insert(entity::Entity::from_rings(
         point![-64.0, -16.0],
         Color::from_hex(0x0000ff),
@@ -36,6 +38,7 @@ async fn main() {
             shooting: Some(controller::ShootingController::Player(Default::default())),
         }),
     ));
+
     app.entities.insert(entity::Entity::from_rings(
         point![64.0, 16.0],
         Color::from_hex(0xff0000),
