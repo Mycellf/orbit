@@ -25,11 +25,11 @@ impl EntityController {
 
         if let Some(motion) = controller.motion.as_mut() {
             match motion {
-                MotionController::Player {
+                MotionController::Player(PlayerMotionController {
                     x_control,
                     y_control,
                     speed,
-                } => {
+                }) => {
                     x_control.update_state();
                     y_control.update_state();
                     let input = vector![x_control.as_f32(), y_control.as_f32()];
@@ -46,7 +46,7 @@ impl EntityController {
 
         if let Some(shooting) = controller.shooting.as_mut() {
             match shooting {
-                ShootingController::Player {
+                ShootingController::Player(PlayerShootingController {
                     shoot_control,
                     precise_shoot_control,
                     cooldown,
@@ -54,7 +54,7 @@ impl EntityController {
                     speed,
                     precision,
                     delay,
-                } => {
+                }) => {
                     let shoot_input = shoot_control.into_iter().any(|b| b.is_down());
                     let precise_shoot_input =
                         precise_shoot_control.into_iter().any(|b| b.is_down());
@@ -112,26 +112,32 @@ impl EntityController {
 
 #[derive(Clone, Debug)]
 pub enum MotionController {
-    Player {
-        x_control: InputAxis,
-        y_control: InputAxis,
-        speed: f32,
-    },
+    Player(PlayerMotionController),
     Computer {},
 }
 
 #[derive(Clone, Debug)]
+pub struct PlayerMotionController {
+    pub x_control: InputAxis,
+    pub y_control: InputAxis,
+    pub speed: f32,
+}
+
+#[derive(Clone, Debug)]
 pub enum ShootingController {
-    Player {
-        shoot_control: Vec<InputButton>,
-        precise_shoot_control: Vec<InputButton>,
-        cooldown: f32,
-        state: f32,
-        speed: Range<f32>,
-        precision: Range<f32>,
-        delay: Range<f32>,
-    },
+    Player(PlayerShootingController),
     Computer {},
+}
+
+#[derive(Clone, Debug)]
+pub struct PlayerShootingController {
+    pub shoot_control: Vec<InputButton>,
+    pub precise_shoot_control: Vec<InputButton>,
+    pub cooldown: f32,
+    pub state: f32,
+    pub speed: Range<f32>,
+    pub precision: Range<f32>,
+    pub delay: Range<f32>,
 }
 
 fn insert_projectile(
