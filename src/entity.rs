@@ -63,12 +63,7 @@ impl Entity {
                 break 'draw_arrow;
             };
 
-            let radius = self.radius + 4.0 - cooldown;
-            let color = Color {
-                a: 1.0 - (cooldown * 0.75),
-                ..self.color
-            };
-
+            let radius = self.radius + 4.0 - 1.5 * cooldown;
             draw_rectangle_ex(
                 self.position.x + radius * aim.re,
                 self.position.y + radius * aim.im,
@@ -77,7 +72,7 @@ impl Entity {
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
                     rotation: aim.angle() + TAU / 8.0,
-                    color,
+                    color: self.color,
                 },
             );
             draw_rectangle_ex(
@@ -88,7 +83,7 @@ impl Entity {
                 DrawRectangleParams {
                     offset: vec2(1.0, 0.0),
                     rotation: aim.angle() + TAU / 8.0,
-                    color,
+                    color: self.color,
                 },
             );
         }
