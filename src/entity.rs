@@ -63,7 +63,7 @@ impl Entity {
                 break 'draw_arrow;
             };
 
-            let radius = self.radius + 4.0 - 2.0 * cooldown;
+            let radius = self.radius + 4.0 - cooldown;
             let color = Color {
                 a: 1.0 - (cooldown * 0.75),
                 ..self.color
