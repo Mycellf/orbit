@@ -40,6 +40,7 @@ impl EntityController {
                     };
                     entity.velocity = input * *speed;
                 }
+                MotionController::Computer {} => todo!(),
             }
         }
 
@@ -101,6 +102,7 @@ impl EntityController {
                     app.mouse.color = entity.color;
                     app.mouse.size_boost = (*cooldown * 1.0 * u16::MAX as f32) as u16;
                 }
+                ShootingController::Computer {} => todo!(),
             }
         }
     }
@@ -115,6 +117,7 @@ pub enum MotionController {
         y_control: InputAxis,
         speed: f32,
     },
+    Computer {},
 }
 
 #[derive(Clone, Debug)]
@@ -128,6 +131,7 @@ pub enum ShootingController {
         precision: Range<f32>,
         delay: Range<f32>,
     },
+    Computer {},
 }
 
 fn insert_projectile(
