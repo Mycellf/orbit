@@ -43,7 +43,9 @@ impl Rectangle {
             .any(|(offset, axis)| {
                 (other.corners)
                     .into_iter()
-                    .all(|corner| (corner - offset).dot(&axis) >= 0.0)
+                    .all(|corner| (corner - offset).dot(&axis) >= 0.0) // this line contains a
+                                                                       // subtle bug that makes this
+                                                                       // function only correct for rectangles
             })
     }
 
