@@ -4,7 +4,11 @@ use crate::{
     input::{InputAxis, InputButton},
     projectile::Projectile,
 };
-use macroquad::{color::Color, prelude::rand};
+use macroquad::{
+    color::Color,
+    input::{KeyCode, MouseButton},
+    prelude::rand,
+};
 use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
 use std::ops::Range;
 use thunderdome::Index;
@@ -123,6 +127,22 @@ pub struct PlayerMotionController {
     pub speed: f32,
 }
 
+impl Default for PlayerMotionController {
+    fn default() -> Self {
+        Self {
+            x_control: InputAxis::from_inputs(
+                vec![KeyCode::D.into(), KeyCode::Right.into()],
+                vec![KeyCode::A.into(), KeyCode::Left.into()],
+            ),
+            y_control: InputAxis::from_inputs(
+                vec![KeyCode::S.into(), KeyCode::Down.into()],
+                vec![KeyCode::W.into(), KeyCode::Up.into()],
+            ),
+            speed: 36.0,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum ShootingController {
     Player(PlayerShootingController),
@@ -138,6 +158,27 @@ pub struct PlayerShootingController {
     pub speed: Range<f32>,
     pub precision: Range<f32>,
     pub delay: Range<f32>,
+}
+
+impl Default for PlayerShootingController {
+    fn default() -> Self {
+        Self {
+            shoot_control: vec![
+                InputButton::Keyboard(KeyCode::Space),
+                InputButton::Mouse(MouseButton::Left),
+            ],
+            precise_shoot_control: vec![
+                InputButton::Keyboard(KeyCode::RightAlt),
+                InputButton::Keyboard(KeyCode::LeftAlt),
+                InputButton::Mouse(MouseButton::Right),
+            ],
+            cooldown: 0.0,
+            state: 0.0,
+            speed: 0.5..0.25,
+            precision: 0.0..0.15,
+            delay: 1.0..2.0,
+        }
+    }
 }
 
 fn insert_projectile(

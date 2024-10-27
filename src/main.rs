@@ -31,37 +31,8 @@ async fn main() {
             // *A gift to rustfmt to keep it from messing this code up*
         ],
         Some(controller::EntityController {
-            motion: Some(controller::MotionController::Player(
-                controller::PlayerMotionController {
-                    x_control: input::InputAxis::from_inputs(
-                        vec![KeyCode::D.into(), KeyCode::Right.into()],
-                        vec![KeyCode::A.into(), KeyCode::Left.into()],
-                    ),
-                    y_control: input::InputAxis::from_inputs(
-                        vec![KeyCode::S.into(), KeyCode::Down.into()],
-                        vec![KeyCode::W.into(), KeyCode::Up.into()],
-                    ),
-                    speed: 36.0,
-                },
-            )),
-            shooting: Some(controller::ShootingController::Player(
-                controller::PlayerShootingController {
-                    shoot_control: vec![
-                        input::InputButton::Keyboard(KeyCode::Space),
-                        input::InputButton::Mouse(MouseButton::Left),
-                    ],
-                    precise_shoot_control: vec![
-                        input::InputButton::Keyboard(KeyCode::RightAlt),
-                        input::InputButton::Keyboard(KeyCode::LeftAlt),
-                        input::InputButton::Mouse(MouseButton::Right),
-                    ],
-                    cooldown: 0.0,
-                    state: 0.0,
-                    speed: 0.5..0.25,
-                    precision: 0.0..0.15,
-                    delay: 1.0..2.0,
-                },
-            )),
+            motion: Some(controller::MotionController::Player(Default::default())),
+            shooting: Some(controller::ShootingController::Player(Default::default())),
         }),
     ));
     app.entities.insert(entity::Entity::from_rings(
