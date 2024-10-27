@@ -8,6 +8,7 @@ pub mod controller;
 pub mod entity;
 pub mod input;
 pub mod mouse_display;
+pub mod player_input;
 pub mod projectile;
 
 fn window_conf() -> Conf {
