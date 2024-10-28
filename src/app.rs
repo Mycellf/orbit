@@ -75,24 +75,22 @@ impl App {
     }
 
     pub fn run_timestep(&mut self) {
-        unsafe {
-            let app = &mut *(self as *mut App); // Nececary due to the borrow checker, causes UB if
-                                                // safety rules are broken
+        let app = unsafe { &mut *(self as *mut App) }; // Nececary due to the borrow checker, causes UB if
+                                                       // safety rules are broken
 
-            let mut to_remove = Vec::new();
-            for (index, projectile) in &mut self.projectiles {
-                if projectile.update(self.timestep_length, app).is_none() {
-                    to_remove.push(index);
-                }
+        let mut to_remove = Vec::new();
+        for (index, projectile) in &mut self.projectiles {
+            if projectile.update(self.timestep_length, app).is_none() {
+                to_remove.push(index);
             }
+        }
 
-            for index in to_remove {
-                self.projectiles.remove(index);
-            }
+        for index in to_remove {
+            self.projectiles.remove(index);
+        }
 
-            for (index, entity) in &mut self.entities {
-                entity.update(index, self.timestep_length, app);
-            }
+        for (index, entity) in &mut self.entities {
+            entity.update(index, self.timestep_length, app);
         }
     }
 
