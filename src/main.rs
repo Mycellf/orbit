@@ -55,7 +55,11 @@ async fn main() {
             components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -TAU / 12.0),
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 6.0, TAU / 24.0),
         ],
-        None,
+        Some(controller::EntityController {
+            targets: Vec::new(),
+            motion: Some(controller::MotionController::Computer()),
+            shooting: Some(controller::ShootingController::Computer()),
+        }),
         controller::Team::Hostile,
     ));
 

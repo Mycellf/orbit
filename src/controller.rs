@@ -38,7 +38,7 @@ impl EntityController {
                 MotionController::Player(controller) => {
                     controller.update(entity);
                 }
-                MotionController::Computer {} => todo!(),
+                MotionController::Computer() => {}
             }
         }
 
@@ -47,7 +47,7 @@ impl EntityController {
                 ShootingController::Player(control) => {
                     control.update(index, entity, delta_seconds, app);
                 }
-                ShootingController::Computer {} => todo!(),
+                ShootingController::Computer() => {}
             }
         }
     }
@@ -62,13 +62,13 @@ impl EntityController {
 #[derive(Clone, Debug)]
 pub enum MotionController {
     Player(PlayerMotionController),
-    Computer {},
+    Computer(),
 }
 
 #[derive(Clone, Debug)]
 pub enum ShootingController {
     Player(PlayerShootingController),
-    Computer {},
+    Computer(),
 }
 
 impl ShootingController {
