@@ -52,7 +52,11 @@ impl EntityController {
         }
     }
 
-    pub fn alert(&mut self, sender: Index) {}
+    pub fn alert(&mut self, sender: Index) {
+        if !self.targets.contains(&sender) {
+            self.targets.push(sender);
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
