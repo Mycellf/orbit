@@ -15,6 +15,7 @@ pub enum Team {
 
 #[derive(Clone, Debug)]
 pub struct EntityController {
+    pub targets: Vec<Index>,
     pub motion: Option<MotionController>,
     pub shooting: Option<ShootingController>,
 }

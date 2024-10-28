@@ -34,6 +34,7 @@ async fn main() {
             // *A gift to rustfmt to keep it from messing this code up*
         ],
         Some(controller::EntityController {
+            targets: Vec::new(),
             motion: Some(controller::MotionController::Player(Default::default())),
             shooting: Some(controller::ShootingController::Player(Default::default())),
         }),
