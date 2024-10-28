@@ -2,14 +2,13 @@ use crate::{
     app::App,
     entity::Entity,
     input::{InputAxis, InputButton},
-    projectile::Projectile,
+    util,
 };
 use macroquad::{
-    color::Color,
     input::{KeyCode, MouseButton},
     rand,
 };
-use nalgebra::{vector, Complex, Point2, UnitComplex, Vector2};
+use nalgebra::{vector, Complex, UnitComplex};
 use std::ops::Range;
 use thunderdome::Index;
 
@@ -78,10 +77,9 @@ impl PlayerShootingController {
         if input && self.cooldown <= 0.0 {
             self.cooldown = self.max_cooldown();
             let nudged_aim = UnitComplex::new(
-                aim.angle() + rand::gen_range(-1.0, 1.0) * lerp(&self.precision, self.state),
+                aim.angle() + rand::gen_range(-1.0, 1.0) * util::lerp(&self.precision, self.state),
             );
-            insert_projectile(
-                app,
+            app.insert_projectile(
                 nudged_aim,
                 entity.position,
                 entity.radius + 4.0,
@@ -109,14 +107,15 @@ impl PlayerShootingController {
             app.mouse.ring_angle = entity.center.angle * -0.5 - (TAU * 3.0 / 8.0);
             app.mouse.set_effects_from_empty_ring();
         }
-        app.mouse.radius = self.state * (length(entity.position - app.mouse.position)) * 0.125;
+        app.mouse.radius =
+            self.state * (util::length(entity.position - app.mouse.position)) * 0.125;
         app.mouse.radius = app.mouse.radius.max(0.0);
         app.mouse.color = entity.color;
         app.mouse.size_boost = (self.cooldown * 1.0 * u16::MAX as f32) as u16;
     }
 
     pub fn max_cooldown(&self) -> f32 {
-        lerp(&self.speed, self.state)
+        util::lerp(&self.speed, self.state)
     }
 }
 
@@ -140,40 +139,4 @@ impl Default for PlayerShootingController {
             aim: Default::default(),
         }
     }
-}
-
-fn insert_projectile(
-    app: &mut App,
-    aim: UnitComplex<f32>,
-    position: Point2<f32>,
-    offset_radius: f32,
-    color: Color,
-    sender: Index,
-) {
-    app.projectiles.insert(Projectile::from_speed(
-        48.0,
-        50.0,
-        aim,
-        position + displacement_from_angle(aim, offset_radius),
-        vector![1.0, 4.0],
-        1.0,
-        color,
-        sender,
-    ));
-}
-
-fn length(vector: Vector2<f32>) -> f32 {
-    length_squared(vector).sqrt()
-}
-
-fn length_squared(vector: Vector2<f32>) -> f32 {
-    vector.x.powi(2) + vector.y.powi(2)
-}
-
-fn lerp(range: &Range<f32>, interpolation: f32) -> f32 {
-    range.start + (range.end - range.start) * interpolation
-}
-
-fn displacement_from_angle(angle: UnitComplex<f32>, distance: f32) -> Vector2<f32> {
-    vector![angle.re, angle.im] * distance
 }

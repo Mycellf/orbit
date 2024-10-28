@@ -1,7 +1,8 @@
-use crate::{entity::Entity, mouse_display::MouseDisplay, projectile::Projectile};
+use crate::{entity::Entity, mouse_display::MouseDisplay, projectile::Projectile, util};
 use macroquad::prelude::*;
+use nalgebra::{vector, Point2, UnitComplex};
 use std::time::Instant;
-use thunderdome::Arena;
+use thunderdome::{Arena, Index};
 
 pub struct App {
     pub timestep_length: f32,
@@ -93,6 +94,26 @@ impl App {
                 entity.update(index, self.timestep_length, app);
             }
         }
+    }
+
+    pub fn insert_projectile(
+        &mut self,
+        aim: UnitComplex<f32>,
+        position: Point2<f32>,
+        offset_radius: f32,
+        color: Color,
+        sender: Index,
+    ) {
+        self.projectiles.insert(Projectile::from_speed(
+            48.0,
+            50.0,
+            aim,
+            position + util::displacement_from_angle(aim, offset_radius),
+            vector![1.0, 4.0],
+            1.0,
+            color,
+            sender,
+        ));
     }
 }
 

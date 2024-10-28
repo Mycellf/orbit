@@ -10,6 +10,7 @@ pub mod input;
 pub mod mouse_display;
 pub mod player_controller;
 pub mod projectile;
+pub mod util;
 
 fn window_conf() -> Conf {
     Conf {
