@@ -2,14 +2,19 @@ use macroquad::prelude::*;
 use nalgebra::{point, vector};
 
 pub mod app;
-pub mod collision;
-pub mod components;
-pub mod controller;
-pub mod entity;
-pub mod input;
-pub mod mouse_display;
-pub mod player_controller;
+
 pub mod projectile;
+
+pub mod components;
+pub mod entity;
+pub mod mouse_display;
+
+pub mod computer_controller;
+pub mod controller;
+pub mod player_controller;
+
+pub mod collision;
+pub mod input;
 pub mod util;
 
 fn window_conf() -> Conf {
