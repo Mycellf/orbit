@@ -1,5 +1,6 @@
 use crate::{
     app::App,
+    computer_controller::{ComputerMotionController, ComputerShootingController},
     entity::Entity,
     player_controller::{PlayerMotionController, PlayerShootingController},
 };
@@ -38,7 +39,7 @@ impl EntityController {
                 MotionController::Player(controller) => {
                     controller.update(entity);
                 }
-                MotionController::Computer() => {}
+                MotionController::Computer(_) => {}
             }
         }
 
@@ -47,7 +48,7 @@ impl EntityController {
                 ShootingController::Player(control) => {
                     control.update(index, entity, delta_seconds, app);
                 }
-                ShootingController::Computer() => {}
+                ShootingController::Computer(_) => {}
             }
         }
     }
@@ -62,13 +63,13 @@ impl EntityController {
 #[derive(Clone, Debug)]
 pub enum MotionController {
     Player(PlayerMotionController),
-    Computer(),
+    Computer(ComputerMotionController),
 }
 
 #[derive(Clone, Debug)]
 pub enum ShootingController {
     Player(PlayerShootingController),
-    Computer(),
+    Computer(ComputerShootingController),
 }
 
 impl ShootingController {

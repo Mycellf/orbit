@@ -57,8 +57,12 @@ async fn main() {
         ],
         Some(controller::EntityController {
             targets: Vec::new(),
-            motion: Some(controller::MotionController::Computer()),
-            shooting: Some(controller::ShootingController::Computer()),
+            motion: Some(controller::MotionController::Computer(
+                computer_controller::ComputerMotionController {},
+            )),
+            shooting: Some(controller::ShootingController::Computer(
+                computer_controller::ComputerShootingController {},
+            )),
         }),
         controller::Team::Hostile,
     ));
