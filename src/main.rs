@@ -61,7 +61,8 @@ async fn main() {
                 computer_controller::ComputerMotionController {
                     speed: 10.0,
                     kind: computer_controller::ComputerMotionControllerKind::Circle {
-                        distance: 75.0,
+                        distance: 50.0,
+                        tangential_weight: 25.0,
                     },
                 },
             )),

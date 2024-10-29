@@ -42,15 +42,14 @@ impl ComputerMotionController {
                     entity.velocity = vector![0.0, 0.0];
                 }
             }
-            ComputerMotionControllerKind::Circle { distance } => {
-                if distance_to_target < distance * 0.5 {
-                    entity.velocity = self.speed * -direction;
-                } else {
-                    let perpendicular = vector![-direction.y, direction.x];
-                    let target = distance * perpendicular + 0.1 * direction + displacement;
+            ComputerMotionControllerKind::Circle {
+                distance,
+                tangential_weight,
+            } => {
+                let perpendicular = tangential_weight * vector![-direction.y, direction.x];
+                let radial = direction * (distance_to_target - distance);
 
-                    entity.velocity = self.speed * target.normalize();
-                }
+                entity.velocity = self.speed * (perpendicular + radial).normalize();
             }
             ComputerMotionControllerKind::Charge => {
                 entity.velocity = self.speed * direction;
@@ -61,8 +60,13 @@ impl ComputerMotionController {
 
 #[derive(Clone, Debug)]
 pub enum ComputerMotionControllerKind {
-    KeepDistance { distance: Range<f32> },
-    Circle { distance: f32 },
+    KeepDistance {
+        distance: Range<f32>,
+    },
+    Circle {
+        distance: f32,
+        tangential_weight: f32,
+    },
     Charge,
 }
 
