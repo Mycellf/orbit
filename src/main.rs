@@ -58,7 +58,12 @@ async fn main() {
         Some(controller::EntityController {
             targets: Vec::new(),
             motion: Some(controller::MotionController::Computer(
-                computer_controller::ComputerMotionController {},
+                computer_controller::ComputerMotionController {
+                    speed: 10.0,
+                    kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
+                        distance: 75.0..100.0,
+                    },
+                },
             )),
             shooting: Some(controller::ShootingController::Computer(
                 computer_controller::ComputerShootingController {},

@@ -34,12 +34,23 @@ impl EntityController {
 
         let entity = entity_unsafe_borrow;
 
+        let mut i = 0;
+        while i < controller.targets.len() {
+            if app.entities.contains(controller.targets[i]) {
+                i += 1;
+            } else {
+                controller.targets.remove(i);
+            }
+        }
+
+        let targets = &mut controller.targets;
+
         if let Some(motion) = controller.motion.as_mut() {
             match motion {
                 MotionController::Player(controller) => {
                     controller.update(entity);
                 }
-                MotionController::Computer(_) => {}
+                MotionController::Computer(controller) => controller.update(entity, targets, app),
             }
         }
 
