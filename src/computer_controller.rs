@@ -24,6 +24,7 @@ impl ComputerMotionController {
         };
 
         let distance = distance_squared.sqrt();
+        let direction = displacement / distance;
 
         match self.kind {
             ComputerMotionControllerKind::KeepDistance {
@@ -33,8 +34,6 @@ impl ComputerMotionController {
                         end: max_distance,
                     },
             } => {
-                let direction = displacement / distance;
-
                 if distance < min_distance {
                     entity.velocity = self.speed * -direction;
                 } else if distance > max_distance {
@@ -44,7 +43,9 @@ impl ComputerMotionController {
                 }
             }
             ComputerMotionControllerKind::Circle { distance } => {}
-            ComputerMotionControllerKind::Charge => {}
+            ComputerMotionControllerKind::Charge => {
+                entity.velocity = self.speed * direction;
+            }
         }
     }
 }
