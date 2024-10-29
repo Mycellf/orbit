@@ -3,6 +3,7 @@ use crate::{
     computer_controller::{ComputerMotionController, ComputerShootingController},
     entity::Entity,
     player_controller::{PlayerMotionController, PlayerShootingController},
+    util,
 };
 use nalgebra::UnitComplex;
 use thunderdome::Index;
@@ -22,6 +23,8 @@ pub struct EntityController {
 }
 
 impl EntityController {
+    pub const AGGRO_DISTANCE: f32 = 100.0;
+
     pub fn update(entity: &mut Entity, index: Index, delta_seconds: f32, app: &mut App) {
         let entity_unsafe_borrow = unsafe { &mut *(entity as *mut Entity) }; // causes UB if safety
                                                                              // rules are broken
@@ -33,6 +36,18 @@ impl EntityController {
         };
 
         let entity = entity_unsafe_borrow;
+
+        if entity.team == Team::Hostile {
+            for (other_index, other_entity) in &app.entities {
+                if index != other_index
+                    && other_entity.team == Team::Player
+                    && util::length_squared(entity.position - other_entity.position)
+                        < Self::AGGRO_DISTANCE.powi(2)
+                {
+                    controller.alert(other_index);
+                }
+            }
+        }
 
         let mut i = 0;
         while i < controller.targets.len() {

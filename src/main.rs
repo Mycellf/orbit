@@ -60,8 +60,8 @@ async fn main() {
             motion: Some(controller::MotionController::Computer(
                 computer_controller::ComputerMotionController {
                     speed: 10.0,
-                    kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 75.0..100.0,
+                    kind: computer_controller::ComputerMotionControllerKind::Circle {
+                        distance: 75.0,
                     },
                 },
             )),

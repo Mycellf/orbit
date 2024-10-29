@@ -23,8 +23,8 @@ impl ComputerMotionController {
             return;
         };
 
-        let distance = distance_squared.sqrt();
-        let direction = displacement / distance;
+        let distance_to_target = distance_squared.sqrt();
+        let direction = displacement / distance_to_target;
 
         match self.kind {
             ComputerMotionControllerKind::KeepDistance {
@@ -34,15 +34,24 @@ impl ComputerMotionController {
                         end: max_distance,
                     },
             } => {
-                if distance < min_distance {
+                if distance_to_target < min_distance {
                     entity.velocity = self.speed * -direction;
-                } else if distance > max_distance {
+                } else if distance_to_target > max_distance {
                     entity.velocity = self.speed * direction;
                 } else {
                     entity.velocity = vector![0.0, 0.0];
                 }
             }
-            ComputerMotionControllerKind::Circle { distance } => {}
+            ComputerMotionControllerKind::Circle { distance } => {
+                if distance_to_target < distance * 0.5 {
+                    entity.velocity = self.speed * -direction;
+                } else {
+                    let perpendicular = vector![-direction.y, direction.x];
+                    let target = distance * perpendicular + 0.1 * direction + displacement;
+
+                    entity.velocity = self.speed * target.normalize();
+                }
+            }
             ComputerMotionControllerKind::Charge => {
                 entity.velocity = self.speed * direction;
             }
