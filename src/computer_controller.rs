@@ -72,3 +72,11 @@ pub enum ComputerMotionControllerKind {
 
 #[derive(Clone, Debug)]
 pub struct ComputerShootingController {}
+
+pub struct Weapon {
+    pub start_speed: f32,
+    pub speed_exp: f32,
+    pub max_cooldown: f32,
+    pub projectiles_per_shot: usize,
+    pub accuracy: f32,
+}
