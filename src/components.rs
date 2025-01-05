@@ -147,6 +147,26 @@ impl Center {
                 color: self.modify_color(color),
             },
         );
+
+        if let Some(armor) = self.armor {
+            if armor.health.get() < armor.max_health.get() {
+                let health_proportion = armor.health.get() as f32 / armor.max_health.get() as f32;
+
+                let hole_size = self.size * (health_proportion - 1.0) * 0.8;
+
+                draw_rectangle_ex(
+                    position.x,
+                    position.y,
+                    hole_size.x,
+                    hole_size.y,
+                    DrawRectangleParams {
+                        offset: vec2(0.5, 0.5),
+                        rotation: self.angle,
+                        color: Color::from_hex(0x000000),
+                    },
+                );
+            }
+        }
     }
 
     pub fn update(&mut self, delta_seconds: f32) {
