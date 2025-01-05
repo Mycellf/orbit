@@ -73,6 +73,32 @@ async fn main() {
         controller::Team::Hostile,
     ));
 
+    app.entities.insert(entity::Entity::from_rings(
+        point![48.0, -48.0],
+        Color::from_hex(0x00ff00),
+        components::Center::from_size(vector![2.0, 2.0], 8, TAU / 6.0),
+        vec![
+            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 4.0, TAU / 12.0),
+            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 12, 6.5, -TAU / 24.0),
+            components::ArmorRing::from_size(vector![16.0, 2.0], 32, 2, 9.0, TAU / 48.0),
+        ],
+        Some(controller::EntityController {
+            targets: Vec::new(),
+            motion: Some(controller::MotionController::Computer(
+                computer_controller::ComputerMotionController {
+                    speed: 10.0,
+                    kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
+                        distance: 48.0..64.0,
+                    },
+                },
+            )),
+            shooting: Some(controller::ShootingController::Computer(
+                computer_controller::ComputerShootingController {},
+            )),
+        }),
+        controller::Team::Neutral,
+    ));
+
     show_mouse(false);
 
     loop {
