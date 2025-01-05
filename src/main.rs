@@ -78,9 +78,9 @@ async fn main() {
         Color::from_hex(0x00ff00),
         components::Center::from_size(vector![2.0, 2.0], 8, TAU / 6.0),
         vec![
-            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 8, 4.0, TAU / 12.0),
+            components::ArmorRing::from_size(vector![2.0, 1.0], 2, 6, 3.5, TAU / 12.0),
             components::ArmorRing::from_size(vector![2.0, 1.0], 2, 12, 6.5, -TAU / 24.0),
-            components::ArmorRing::from_size(vector![16.0, 2.0], 32, 2, 9.0, TAU / 48.0),
+            components::ArmorRing::from_size(vector![12.0, 2.0], 24, 3, 9.0, TAU / 48.0),
         ],
         Some(controller::EntityController {
             targets: Vec::new(),
