@@ -124,12 +124,12 @@ impl Default for PlayerShootingController {
         Self {
             shoot_control: vec![
                 InputButton::Keyboard(KeyCode::Space),
-                InputButton::Mouse(MouseButton::Left),
+                InputButton::Mouse(MouseButton::Right),
             ],
             precise_shoot_control: vec![
                 InputButton::Keyboard(KeyCode::RightAlt),
                 InputButton::Keyboard(KeyCode::LeftAlt),
-                InputButton::Mouse(MouseButton::Right),
+                InputButton::Mouse(MouseButton::Left),
             ],
             cooldown: 0.0,
             state: 0.0,
