@@ -70,6 +70,8 @@ async fn main() {
                 computer_controller::ComputerShootingController {
                     aim: None,
                     cooldown: 0.0,
+                    aiming_lead: 1.0,
+                    lead_weight: 20.0,
                 },
             )),
         }),
@@ -99,6 +101,8 @@ async fn main() {
                 computer_controller::ComputerShootingController {
                     aim: None,
                     cooldown: 0.0,
+                    aiming_lead: 1.0,
+                    lead_weight: 10.0,
                 },
             )),
         }),

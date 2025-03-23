@@ -72,6 +72,11 @@ pub enum ComputerMotionControllerKind {
 pub struct ComputerShootingController {
     pub aim: Option<UnitComplex<f32>>,
     pub cooldown: f32,
+    /// 1.0 means use leading, 0.0 means ignore leading
+    pub aiming_lead: f32,
+    /// this is added to the muzzle distance when calculating target leading
+    /// 10.0 typically leads to best performance
+    pub lead_weight: f32,
 }
 
 impl ComputerShootingController {
@@ -95,11 +100,19 @@ impl ComputerShootingController {
 
         let target = &app.entities[closest];
 
-        let muzzle_length = entity.radius + 4.0;
-        let muzzle_distance = distance_squared.sqrt() - muzzle_length;
+        let lead_amount = if self.aiming_lead != 0.0 {
+            let muzzle_length = entity.radius + 4.0;
+            let muzzle_distance = distance_squared.sqrt() - muzzle_length;
 
-        let aim = displacement
-            + target.velocity * ((muzzle_distance + 10.0) * 50.0f32.ln() / 48.0).log(50.0);
+            let expected_time_to_target =
+                ((muzzle_distance + self.lead_weight) * 50.0f32.ln() / 48.0).log(50.0);
+
+            expected_time_to_target * target.velocity * self.aiming_lead
+        } else {
+            [0.0; 2].into()
+        };
+
+        let aim = displacement + lead_amount;
 
         let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
         self.aim = Some(aim);
