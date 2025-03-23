@@ -81,6 +81,12 @@ impl EntityController {
     }
 
     pub fn alert(&mut self, sender: Index) {
+        if self.targets.is_empty() {
+            if let Some(ShootingController::Computer(controller)) = &mut self.shooting {
+                controller.cooldown = controller.weapon.cooldown;
+            }
+        }
+
         if !self.targets.contains(&sender) {
             self.targets.push(sender);
         }
