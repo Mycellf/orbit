@@ -7,7 +7,7 @@ use thunderdome::Index;
 pub struct Projectile {
     pub position: Point2<f32>,
     pub angle: UnitComplex<f32>,
-    pub speed: f32,
+    pub initial_speed: f32,
     pub speed_exp_base: f32,
     pub lifetime: f32,
     pub age: f32,
@@ -15,11 +15,12 @@ pub struct Projectile {
     pub color: Color,
     pub sender: Index,
     pub team: Option<Team>,
+    pub previous_displacement: f32,
 }
 
 impl Projectile {
     pub fn from_speed(
-        speed: f32,
+        initial_speed: f32,
         speed_multiplier: f32,
         angle: UnitComplex<f32>,
         position: Point2<f32>,
@@ -33,7 +34,7 @@ impl Projectile {
         Self {
             position,
             angle,
-            speed,
+            initial_speed,
             speed_exp_base: speed_multiplier,
             lifetime,
             age,
@@ -41,11 +42,14 @@ impl Projectile {
             color,
             sender,
             team,
+            previous_displacement: 0.0,
         }
     }
 
     /// Returning `None` indicates a request for deletion.
     pub fn update(&mut self, delta_seconds: f32, app: &mut App) -> Option<()> {
+        let previous_age = self.age;
+
         self.age += delta_seconds;
         if self.age >= self.lifetime {
             return None;
@@ -54,12 +58,15 @@ impl Projectile {
         // Motion
         if self.speed_exp_base == 1.0 {
             self.position += self.velocity() * delta_seconds;
+
+            self.previous_displacement = self.initial_speed * delta_seconds;
         } else {
-            self.speed *= self.speed_exp_base.powf(delta_seconds);
-            self.position += self.distance_ahead(
-                self.speed * (self.speed_exp_base.powf(delta_seconds) - 1.0)
-                    / self.speed_exp_base.ln(),
-            );
+            let displacement = self.initial_speed
+                * (self.speed_exp_base.powf(self.age) - self.speed_exp_base.powf(previous_age))
+                / self.speed_exp_base.ln();
+            self.position += self.distance_ahead(displacement);
+
+            self.previous_displacement = displacement;
         }
 
         // Collision
@@ -86,11 +93,11 @@ impl Projectile {
         }
     }
 
-    pub fn draw(&self, frame_time: f32) {
+    pub fn draw(&self) {
         draw_rectangle_ex(
             self.position.x,
             self.position.y,
-            self.size.y.max(self.speed * frame_time),
+            self.size.y.max(self.previous_displacement),
             self.size.x,
             DrawRectangleParams {
                 offset: vec2(1.0, 0.5),
@@ -108,7 +115,7 @@ impl Projectile {
     }
 
     pub fn velocity(&self) -> Vector2<f32> {
-        self.distance_ahead(self.speed)
+        self.distance_ahead(self.initial_speed)
     }
 
     pub fn distance_ahead(&self, distance: f32) -> Vector2<f32> {
@@ -165,7 +172,10 @@ impl Projectile {
     pub fn get_collider(&self, delta_seconds: f32) -> Rectangle {
         Rectangle::from_dimensions(
             self.position,
-            vector![self.size.y + self.speed * delta_seconds, self.size.x],
+            vector![
+                self.size.y + self.initial_speed * delta_seconds,
+                self.size.x
+            ],
             vector![1.0, 0.5],
             self.angle,
         )

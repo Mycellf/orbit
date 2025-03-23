@@ -49,9 +49,8 @@ impl App {
         clear_background(BLACK);
         update_camera(&mut self.camera);
 
-        let frame_time = self.frame_time.max(self.timestep_length);
         for (_, projectile) in &self.projectiles {
-            projectile.draw(frame_time);
+            projectile.draw();
         }
 
         for (_, entity) in &self.entities {
