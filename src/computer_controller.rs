@@ -16,6 +16,8 @@ impl ComputerMotionController {
         let Some((closest, displacement, distance_squared)) =
             closest_target(targets.iter(), entity.position, app)
         else {
+            entity.velocity = [0.0; 2].into();
+
             return;
         };
 
