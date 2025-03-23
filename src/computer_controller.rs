@@ -120,13 +120,13 @@ impl ComputerShootingController {
         self.aim = Some(aim);
 
         if self.cooldown <= 0.0 {
+            self.cooldown = self.weapon.cooldown;
+
             let aim_angle = aim.angle();
             let projectile_sweep =
                 (self.weapon.projectiles_per_shot - 1) as f32 * self.weapon.projectile_angle;
 
             let start_angle = aim_angle - projectile_sweep / 2.0;
-
-            self.cooldown = self.weapon.cooldown;
 
             for i in 0..self.weapon.projectiles_per_shot {
                 let angle = start_angle + i as f32 * self.weapon.projectile_angle;
