@@ -1,5 +1,6 @@
 use std::ops::Range;
 
+use macroquad::rand;
 use nalgebra::{Complex, Point2, UnitComplex, Vector2, vector};
 use thunderdome::Index;
 
@@ -70,6 +71,7 @@ pub enum ComputerMotionControllerKind {
 
 #[derive(Clone, Debug)]
 pub struct ComputerShootingController {
+    pub weapon: Weapon,
     pub aim: Option<UnitComplex<f32>>,
     pub cooldown: f32,
     /// 1.0 means use leading, 0.0 means ignore leading
@@ -118,16 +120,31 @@ impl ComputerShootingController {
         self.aim = Some(aim);
 
         if self.cooldown <= 0.0 {
-            self.cooldown = 1.0;
+            let aim_angle = aim.angle();
+            let projectile_sweep =
+                (self.weapon.projectiles_per_shot - 1) as f32 * self.weapon.projectile_angle;
 
-            app.insert_projectile(
-                aim,
-                entity.position,
-                entity.radius + 4.0,
-                entity.color,
-                entity.team,
-                index,
-            );
+            let start_angle = aim_angle - projectile_sweep / 2.0;
+
+            self.cooldown = self.weapon.cooldown;
+
+            for i in 0..self.weapon.projectiles_per_shot {
+                let angle = start_angle + i as f32 * self.weapon.projectile_angle;
+
+                let nudged_aim =
+                    UnitComplex::new(angle + rand::gen_range(-1.0, 1.0) * self.weapon.innacuracy);
+
+                app.insert_projectile(
+                    self.weapon.initial_speed,
+                    self.weapon.speed_exponent,
+                    nudged_aim,
+                    entity.position,
+                    entity.radius + 4.0,
+                    entity.color,
+                    entity.team,
+                    index,
+                );
+            }
         }
     }
 
@@ -151,12 +168,14 @@ pub enum ComputerFiringKind {
     WithinDistance { distance: Range<f32> },
 }
 
+#[derive(Clone, Debug)]
 pub struct Weapon {
-    pub start_speed: f32,
-    pub speed_exp: f32,
-    pub max_cooldown: f32,
+    pub initial_speed: f32,
+    pub speed_exponent: f32,
+    pub cooldown: f32,
     pub projectiles_per_shot: usize,
-    pub accuracy: f32,
+    pub projectile_angle: f32,
+    pub innacuracy: f32,
 }
 
 pub fn closest_target<'a>(

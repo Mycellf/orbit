@@ -96,6 +96,8 @@ impl App {
 
     pub fn insert_projectile(
         &mut self,
+        initial_speed: f32,
+        speed_exponent: f32,
         aim: UnitComplex<f32>,
         position: Point2<f32>,
         offset_radius: f32,
@@ -104,8 +106,8 @@ impl App {
         sender: Index,
     ) {
         self.projectiles.insert(Projectile::from_speed(
-            48.0,
-            50.0,
+            initial_speed,
+            speed_exponent,
             aim,
             position + util::displacement_from_angle(aim, offset_radius),
             vector![1.0, 4.0],

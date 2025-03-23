@@ -1,3 +1,4 @@
+use computer_controller::Weapon;
 use macroquad::prelude::*;
 use nalgebra::{point, vector};
 
@@ -68,6 +69,14 @@ async fn main() {
             )),
             shooting: Some(controller::ShootingController::Computer(
                 computer_controller::ComputerShootingController {
+                    weapon: Weapon {
+                        initial_speed: 48.0,
+                        speed_exponent: 50.0,
+                        cooldown: 1.0,
+                        projectiles_per_shot: 1,
+                        projectile_angle: 0.0,
+                        innacuracy: 0.0,
+                    },
                     aim: None,
                     cooldown: 0.0,
                     aiming_lead: 1.0,
@@ -99,6 +108,14 @@ async fn main() {
             )),
             shooting: Some(controller::ShootingController::Computer(
                 computer_controller::ComputerShootingController {
+                    weapon: Weapon {
+                        initial_speed: 48.0 * 5.0,
+                        speed_exponent: 1.0 / 50.0,
+                        cooldown: 2.0,
+                        projectiles_per_shot: 9,
+                        projectile_angle: TAU / 32.0 / 9.0,
+                        innacuracy: 0.0,
+                    },
                     aim: None,
                     cooldown: 0.0,
                     aiming_lead: 1.0,

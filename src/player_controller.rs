@@ -76,10 +76,14 @@ impl PlayerShootingController {
         self.cooldown = (self.cooldown - delta_seconds).max(0.0);
         if input && self.cooldown <= 0.0 {
             self.cooldown = self.max_cooldown();
+
             let nudged_aim = UnitComplex::new(
                 aim.angle() + rand::gen_range(-1.0, 1.0) * util::lerp(&self.precision, self.state),
             );
+
             app.insert_projectile(
+                48.0,
+                50.0,
                 nudged_aim,
                 entity.position,
                 entity.radius + 4.0,
