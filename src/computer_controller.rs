@@ -95,7 +95,12 @@ impl ComputerShootingController {
 
         let target = &app.entities[closest];
 
-        let aim = displacement;
+        let muzzle_length = entity.radius + 4.0;
+        let muzzle_distance = distance_squared.sqrt() - muzzle_length;
+
+        let aim = displacement
+            + target.velocity * ((muzzle_distance + 10.0) * 50.0f32.ln() / 48.0).log(50.0);
+
         let aim = UnitComplex::from_complex(Complex::new(aim.x, aim.y));
         self.aim = Some(aim);
 
