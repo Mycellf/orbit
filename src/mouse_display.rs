@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
-use nalgebra::{point, Point2, UnitComplex};
+use nalgebra::{Point2, UnitComplex, point};
+
+use crate::components::ArmorRing;
 
 pub struct MouseDisplay {
     pub radius: f32,
@@ -43,7 +45,7 @@ impl MouseDisplay {
         self.position = point![position.x, position.y];
     }
 
-    pub fn set_effects_from_ring(&mut self, ring: &crate::components::ArmorRing) {
+    pub fn set_effects_from_ring(&mut self, ring: &ArmorRing) {
         for (armor, effect) in (&ring.armor)
             .into_iter()
             .rev()
