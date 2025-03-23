@@ -70,7 +70,7 @@ impl Projectile {
         }
 
         // Collision
-        let collider = self.get_collider(delta_seconds);
+        let collider = self.get_collider();
 
         let mut hit = None;
         for (index, entity) in &mut app.entities {
@@ -167,15 +167,11 @@ impl Projectile {
         None
     }
 
-    /// Note that this factors in the speed of the projectile to make its hitbox longer. To
-    /// disable this, pass 0.0 to `delta_seconds`.
-    pub fn get_collider(&self, delta_seconds: f32) -> Rectangle {
+    /// Note that this factors in the previous displacement of the projectile
+    pub fn get_collider(&self) -> Rectangle {
         Rectangle::from_dimensions(
             self.position,
-            vector![
-                self.size.y + self.initial_speed * delta_seconds,
-                self.size.x
-            ],
+            vector![self.size.y + self.previous_displacement, self.size.x],
             vector![1.0, 0.5],
             self.angle,
         )
