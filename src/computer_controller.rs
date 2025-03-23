@@ -13,7 +13,7 @@ pub struct ComputerMotionController {
 
 impl ComputerMotionController {
     pub fn update(&mut self, entity: &mut Entity, targets: &mut Vec<Index>, app: &mut App) {
-        let Some((closest, displacement, distance_squared)) =
+        let Some((target_index, displacement, distance_squared)) =
             closest_target(targets.iter(), entity.position, app)
         else {
             entity.velocity = [0.0; 2].into();
@@ -90,7 +90,7 @@ impl ComputerShootingController {
     ) {
         self.cooldown = (self.cooldown - delta_seconds).max(0.0);
 
-        let Some((closest, displacement, distance_squared)) =
+        let Some((target_index, displacement, distance_squared)) =
             closest_target(targets.iter(), entity.position, app)
         else {
             self.aim = None;
@@ -98,7 +98,7 @@ impl ComputerShootingController {
             return;
         };
 
-        let target = &app.entities[closest];
+        let target = &app.entities[target_index];
 
         let lead_amount = if self.aiming_lead != 0.0 {
             let muzzle_length = entity.radius + 4.0;
