@@ -4,7 +4,7 @@ use macroquad::rand;
 use nalgebra::{Complex, Point2, UnitComplex, Vector2, vector};
 use thunderdome::Index;
 
-use crate::{app::App, entity::Entity, util};
+use crate::{app::App, controller::SightKind, entity::Entity, util};
 
 #[derive(Clone, Debug)]
 pub struct ComputerMotionController {
@@ -148,9 +148,9 @@ impl ComputerShootingController {
         }
     }
 
-    pub fn aim(&self) -> Option<(UnitComplex<f32>, f32)> {
+    pub fn aim(&self) -> Option<(UnitComplex<f32>, f32, SightKind)> {
         if let Some(aim) = self.aim {
-            Some((aim, self.cooldown))
+            Some((aim, self.cooldown, self.weapon.sight_kind))
         } else {
             None
         }
@@ -176,6 +176,7 @@ pub struct Weapon {
     pub projectiles_per_shot: usize,
     pub projectile_angle: f32,
     pub innacuracy: f32,
+    pub sight_kind: SightKind,
 }
 
 pub fn closest_target<'a>(

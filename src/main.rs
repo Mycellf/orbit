@@ -1,4 +1,5 @@
 use computer_controller::Weapon;
+use controller::SightKind;
 use macroquad::prelude::*;
 use nalgebra::{point, vector};
 
@@ -32,6 +33,7 @@ async fn main() {
 
     let mut app = app::App::from_ups(120.0);
 
+    // Blue player entity
     app.entities.insert(entity::Entity::from_rings(
         point![-64.0, -16.0],
         Color::from_hex(0x0000ff),
@@ -48,6 +50,7 @@ async fn main() {
         controller::Team::Player,
     ));
 
+    // Red entity
     app.entities.insert(entity::Entity::from_rings(
         point![64.0, 16.0],
         Color::from_hex(0xff0000),
@@ -76,6 +79,7 @@ async fn main() {
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
                         innacuracy: 0.0,
+                        sight_kind: SightKind::Arrow,
                     },
                     aim: None,
                     cooldown: 0.0,
@@ -87,6 +91,7 @@ async fn main() {
         controller::Team::Hostile,
     ));
 
+    // Green entity
     app.entities.insert(entity::Entity::from_rings(
         point![48.0, -48.0],
         Color::from_hex(0x00ff00),
@@ -115,10 +120,11 @@ async fn main() {
                         projectiles_per_shot: 9,
                         projectile_angle: TAU / 32.0 / 9.0,
                         innacuracy: 0.0,
+                        sight_kind: SightKind::Cross,
                     },
                     aim: None,
                     cooldown: 0.0,
-                    aiming_lead: 1.0,
+                    aiming_lead: 0.5,
                     lead_weight: 10.0,
                 },
             )),

@@ -100,13 +100,20 @@ pub enum ShootingController {
 }
 
 impl ShootingController {
-    pub fn aim(&self) -> Option<(UnitComplex<f32>, f32)> {
+    pub fn aim(&self) -> Option<(UnitComplex<f32>, f32, SightKind)> {
         match self {
             Self::Player(controller) => Some((
                 controller.aim,
                 controller.cooldown / controller.max_cooldown(),
+                SightKind::Arrow,
             )),
             Self::Computer(controller) => controller.aim(),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum SightKind {
+    Arrow,
+    Cross,
 }

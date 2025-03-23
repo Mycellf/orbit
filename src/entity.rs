@@ -1,7 +1,7 @@
 use crate::{
     app::App,
     components::{ArmorRing, Center},
-    controller::{EntityController, Team},
+    controller::{EntityController, SightKind, Team},
 };
 use macroquad::prelude::*;
 use nalgebra::{Point2, Vector2};
@@ -50,42 +50,73 @@ impl Entity {
             ring.draw_around(self.position, self.color);
         }
 
-        'draw_arrow: {
+        'draw_sight: {
             let Some(controller) = &self.controller else {
-                break 'draw_arrow;
+                break 'draw_sight;
             };
 
             let Some(controller) = &controller.shooting else {
-                break 'draw_arrow;
+                break 'draw_sight;
             };
 
-            let Some((aim, cooldown)) = controller.aim() else {
-                break 'draw_arrow;
+            let Some((aim, cooldown, sight_kind)) = controller.aim() else {
+                break 'draw_sight;
             };
 
-            let radius = self.radius + 4.0 - 1.5 * cooldown;
-            draw_rectangle_ex(
-                self.position.x + radius * aim.re,
-                self.position.y + radius * aim.im,
-                2.0,
-                0.75,
-                DrawRectangleParams {
-                    offset: vec2(1.0, 0.0),
-                    rotation: aim.angle() + TAU / 8.0,
-                    color: self.color,
-                },
-            );
-            draw_rectangle_ex(
-                self.position.x + radius * aim.re,
-                self.position.y + radius * aim.im,
-                0.75,
-                2.0,
-                DrawRectangleParams {
-                    offset: vec2(1.0, 0.0),
-                    rotation: aim.angle() + TAU / 8.0,
-                    color: self.color,
-                },
-            );
+            match sight_kind {
+                SightKind::Arrow => {
+                    let radius = self.radius + 4.0 - 1.5 * cooldown;
+
+                    draw_rectangle_ex(
+                        self.position.x + radius * aim.re,
+                        self.position.y + radius * aim.im,
+                        2.0,
+                        0.75,
+                        DrawRectangleParams {
+                            offset: vec2(1.0, 0.0),
+                            rotation: aim.angle() + TAU / 8.0,
+                            color: self.color,
+                        },
+                    );
+                    draw_rectangle_ex(
+                        self.position.x + radius * aim.re,
+                        self.position.y + radius * aim.im,
+                        0.75,
+                        2.0,
+                        DrawRectangleParams {
+                            offset: vec2(1.0, 0.0),
+                            rotation: aim.angle() + TAU / 8.0,
+                            color: self.color,
+                        },
+                    );
+                }
+                SightKind::Cross => {
+                    let radius = self.radius + 5.0 - 1.5 * cooldown;
+
+                    draw_rectangle_ex(
+                        self.position.x + radius * aim.re,
+                        self.position.y + radius * aim.im,
+                        2.75,
+                        0.75,
+                        DrawRectangleParams {
+                            offset: vec2(1.0, 0.5),
+                            rotation: aim.angle(),
+                            color: self.color,
+                        },
+                    );
+                    draw_rectangle_ex(
+                        self.position.x + radius * aim.re,
+                        self.position.y + radius * aim.im,
+                        0.75,
+                        2.75,
+                        DrawRectangleParams {
+                            offset: vec2(1.0, 0.5),
+                            rotation: aim.angle(),
+                            color: self.color,
+                        },
+                    );
+                }
+            }
         }
     }
 
