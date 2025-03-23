@@ -67,7 +67,10 @@ async fn main() {
                 },
             )),
             shooting: Some(controller::ShootingController::Computer(
-                computer_controller::ComputerShootingController {},
+                computer_controller::ComputerShootingController {
+                    aim: None,
+                    cooldown: 0.0,
+                },
             )),
         }),
         controller::Team::Hostile,
@@ -93,7 +96,10 @@ async fn main() {
                 },
             )),
             shooting: Some(controller::ShootingController::Computer(
-                computer_controller::ComputerShootingController {},
+                computer_controller::ComputerShootingController {
+                    aim: None,
+                    cooldown: 0.0,
+                },
             )),
         }),
         controller::Team::Neutral,

@@ -1,6 +1,8 @@
-use crate::{entity::Entity, mouse_display::MouseDisplay, projectile::Projectile, util};
+use crate::{
+    controller::Team, entity::Entity, mouse_display::MouseDisplay, projectile::Projectile, util,
+};
 use macroquad::prelude::*;
-use nalgebra::{vector, Point2, UnitComplex};
+use nalgebra::{Point2, UnitComplex, vector};
 use std::time::Instant;
 use thunderdome::{Arena, Index};
 
@@ -99,6 +101,7 @@ impl App {
         position: Point2<f32>,
         offset_radius: f32,
         color: Color,
+        team: Team,
         sender: Index,
     ) {
         self.projectiles.insert(Projectile::from_speed(
@@ -110,6 +113,7 @@ impl App {
             1.0,
             color,
             sender,
+            Some(team),
         ));
     }
 }

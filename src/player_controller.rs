@@ -8,7 +8,7 @@ use macroquad::{
     input::{KeyCode, MouseButton},
     rand,
 };
-use nalgebra::{vector, Complex, UnitComplex};
+use nalgebra::{Complex, UnitComplex, vector};
 use std::ops::Range;
 use thunderdome::Index;
 
@@ -84,6 +84,7 @@ impl PlayerShootingController {
                 entity.position,
                 entity.radius + 4.0,
                 entity.color,
+                entity.team,
                 index,
             );
         }

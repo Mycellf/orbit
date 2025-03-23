@@ -1,6 +1,6 @@
-use crate::{app::App, collision::Rectangle, components::Armor, entity::Entity};
+use crate::{app::App, collision::Rectangle, components::Armor, controller::Team, entity::Entity};
 use macroquad::prelude::*;
-use nalgebra::{distance_squared, vector, Point2, UnitComplex, Vector2};
+use nalgebra::{Point2, UnitComplex, Vector2, distance_squared, vector};
 use thunderdome::Index;
 
 #[derive(Clone, Copy, Debug)]
@@ -14,6 +14,7 @@ pub struct Projectile {
     pub size: Vector2<f32>,
     pub color: Color,
     pub sender: Index,
+    pub team: Option<Team>,
 }
 
 impl Projectile {
@@ -26,6 +27,7 @@ impl Projectile {
         lifetime: f32,
         color: Color,
         sender: Index,
+        team: Option<Team>,
     ) -> Self {
         let age = 0.0;
         Self {
@@ -38,6 +40,7 @@ impl Projectile {
             size,
             color,
             sender,
+            team,
         }
     }
 
@@ -62,11 +65,9 @@ impl Projectile {
         // Collision
         let collider = self.get_collider(delta_seconds);
 
-        let team = app.entities[self.sender].team;
-
         let mut hit = None;
         for (index, entity) in &mut app.entities {
-            if entity.team != team
+            if Some(entity.team) != self.team
                 && self
                     .check_collisions_with_entity(&collider, entity, self.angle)
                     .is_some()

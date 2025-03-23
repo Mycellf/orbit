@@ -73,7 +73,9 @@ impl EntityController {
                 ShootingController::Player(control) => {
                     control.update(index, entity, delta_seconds, app);
                 }
-                ShootingController::Computer(_) => {}
+                ShootingController::Computer(control) => {
+                    control.update(index, entity, targets, delta_seconds, app)
+                }
             }
         }
     }
@@ -104,7 +106,7 @@ impl ShootingController {
                 controller.aim,
                 controller.cooldown / controller.max_cooldown(),
             )),
-            _ => None,
+            Self::Computer(controller) => controller.aim(),
         }
     }
 }
