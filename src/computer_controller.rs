@@ -150,7 +150,11 @@ impl ComputerShootingController {
 
     pub fn aim(&self) -> Option<(UnitComplex<f32>, f32, SightKind)> {
         if let Some(aim) = self.aim {
-            Some((aim, self.cooldown, self.weapon.sight_kind))
+            Some((
+                aim,
+                self.cooldown / self.weapon.cooldown,
+                self.weapon.sight_kind,
+            ))
         } else {
             None
         }
