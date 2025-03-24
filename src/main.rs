@@ -149,7 +149,7 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
                         innacuracy: TAU / 32.0,
-                        sight_kind: SightKind::Arrow,
+                        sight_kind: SightKind::Cross,
                     },
                     aim: None,
                     cooldown: 0.0,
