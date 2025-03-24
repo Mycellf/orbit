@@ -54,11 +54,11 @@ async fn main() {
         controller::Team::Player,
     ));
 
-    // app.entities.insert(sniper(point![96.0, 48.0]));
+    app.entities.insert(sniper(point![96.0, 48.0]));
 
     app.entities.insert(berzerker(point![96.0, -48.0]));
 
-    // app.entities.insert(neutral(point![-96.0, 0.0]));
+    app.entities.insert(neutral(point![-96.0, 0.0]));
 
     macroquad::input::show_mouse(false);
 
