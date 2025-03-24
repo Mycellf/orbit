@@ -14,7 +14,7 @@ pub struct ComputerMotionController {
 
 impl ComputerMotionController {
     pub fn update(&mut self, entity: &mut Entity, targets: &mut Vec<Index>, app: &mut App) {
-        let Some((target_index, displacement, distance_squared)) =
+        let Some((_, displacement, distance_squared)) =
             closest_target(targets.iter(), entity.position, app)
         else {
             entity.velocity = [0.0; 2].into();
