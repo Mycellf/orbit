@@ -103,7 +103,7 @@ pub fn sniper(position: Point2<f32>) -> Entity {
                     weapon: Weapon {
                         initial_speed: 48.0,
                         speed_exponent: 50.0,
-                        cooldown: 1.0,
+                        cooldown: 2.0,
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
                         innacuracy: 0.0,
@@ -145,7 +145,7 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                     weapon: Weapon {
                         initial_speed: 48.0 * 5.0,
                         speed_exponent: 1.0 / 10.0,
-                        cooldown: 0.5,
+                        cooldown: 1.0,
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
                         innacuracy: TAU / 32.0,
@@ -179,7 +179,7 @@ pub fn neutral(position: Point2<f32>) -> Entity {
                 computer_controller::ComputerMotionController {
                     speed: 10.0,
                     kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 40.0..56.0,
+                        distance: 32.0..48.0,
                     },
                 },
             )),
@@ -188,7 +188,7 @@ pub fn neutral(position: Point2<f32>) -> Entity {
                     weapon: Weapon {
                         initial_speed: 48.0 * 5.0,
                         speed_exponent: 1.0 / 50.0,
-                        cooldown: 2.0,
+                        cooldown: 3.0,
                         projectiles_per_shot: 9,
                         projectile_angle: TAU / 32.0 / 9.0,
                         innacuracy: 0.0,

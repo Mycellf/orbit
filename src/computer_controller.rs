@@ -23,7 +23,8 @@ impl ComputerMotionController {
         };
 
         let distance_to_target = distance_squared.sqrt();
-        let distance_to_target_edge = distance_to_target - app.entities[target_index].radius;
+        let distance_to_target_edge =
+            distance_to_target - app.entities[target_index].radius - entity.radius;
         let direction = displacement / distance_to_target;
 
         match self.kind {
