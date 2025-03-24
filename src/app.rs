@@ -1,5 +1,6 @@
 use crate::{
-    controller::Team, entity::Entity, mouse_display::MouseDisplay, projectile::Projectile, util,
+    camera::CameraControl, controller::Team, entity::Entity, input::InputAxis,
+    mouse_display::MouseDisplay, projectile::Projectile, util,
 };
 use macroquad::prelude::*;
 use nalgebra::{Point2, UnitComplex, vector};
@@ -12,6 +13,7 @@ pub struct App {
     pub last_frame: Instant,
     pub frame_time: f32,
     pub camera: Camera2D,
+    pub camera_control: CameraControl,
     pub entities: Arena<Entity>,
     pub projectiles: Arena<Projectile>,
     pub mouse: MouseDisplay,
@@ -30,6 +32,14 @@ impl App {
             zoom: Vec2::splat(1.0 / 64.0),
             ..Default::default()
         };
+        let camera_control = CameraControl::Manual {
+            vertical: InputAxis::from_inputs(vec![KeyCode::K.into()], vec![KeyCode::I.into()]),
+            horizontal: InputAxis::from_inputs(vec![KeyCode::L.into()], vec![KeyCode::J.into()]),
+            boost: vec![KeyCode::LeftShift.into()],
+            default_speed: 40.0,
+            boost_speed: 80.0,
+            normalized: true,
+        };
         let entities = Arena::new();
         let projectiles = Arena::new();
         let mouse = MouseDisplay::from_speed(-TAU / 6.0, TAU / 12.0);
@@ -39,6 +49,7 @@ impl App {
             last_frame,
             frame_time,
             camera,
+            camera_control,
             entities,
             projectiles,
             mouse,
@@ -92,6 +103,10 @@ impl App {
         for (index, entity) in &mut self.entities {
             entity.update(index, self.timestep_length, app);
         }
+
+        self.camera_control
+            .update_camera(&mut self.camera, self.timestep_length);
+        self.mouse.update_mouse_position(&self.camera);
     }
 
     pub fn insert_projectile(

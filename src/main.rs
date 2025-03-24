@@ -10,6 +10,7 @@ pub mod app;
 
 pub mod projectile;
 
+pub mod camera;
 pub mod components;
 pub mod entity;
 pub mod mouse_display;
