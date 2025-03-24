@@ -1,7 +1,10 @@
+use std::f32::consts::TAU;
+
 use computer_controller::Weapon;
 use controller::SightKind;
+use entity::Entity;
 use macroquad::prelude::*;
-use nalgebra::{point, vector};
+use nalgebra::{Point2, point, vector};
 
 pub mod app;
 
@@ -31,13 +34,11 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    use std::f32::consts::TAU;
-
     let mut app = app::App::from_ups(120.0);
 
     // Blue player entity
     app.entities.insert(entity::Entity::from_rings(
-        point![-64.0, 0.0],
+        point![-32.0, 0.0],
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 8, -TAU / 6.0),
         vec![
@@ -52,9 +53,33 @@ async fn main() {
         controller::Team::Player,
     ));
 
-    // Red entity
-    app.entities.insert(entity::Entity::from_rings(
-        point![48.0, 48.0],
+    app.entities.insert(sniper(point![96.0, 48.0]));
+
+    app.entities.insert(berzerker(point![96.0, -48.0]));
+
+    app.entities.insert(neutral(point![-96.0, 0.0]));
+
+    macroquad::input::show_mouse(false);
+
+    let mut fullscreen = START_IN_FULLSCREEN;
+
+    loop {
+        if macroquad::input::is_key_pressed(KeyCode::F11) {
+            fullscreen ^= true;
+            set_fullscreen(fullscreen);
+        }
+
+        app.update();
+        app.draw();
+
+        next_frame().await;
+    }
+}
+
+// Strategy: zig-zag
+pub fn sniper(position: Point2<f32>) -> Entity {
+    entity::Entity::from_rings(
+        position,
         Color::from_hex(0xff0000),
         components::Center::from_size(vector![2.0, 2.0], 8, TAU / 6.0),
         vec![
@@ -91,11 +116,55 @@ async fn main() {
             )),
         }),
         controller::Team::Hostile,
-    ));
+    )
+}
 
-    // Green entity
-    app.entities.insert(entity::Entity::from_rings(
-        point![48.0, -48.0],
+// strategy: circle around
+pub fn berzerker(position: Point2<f32>) -> Entity {
+    entity::Entity::from_rings(
+        position,
+        Color::from_hex(0xff0000),
+        components::Center::from_size(vector![2.5, 2.0], 10, TAU / 3.0),
+        vec![
+            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, -TAU / 6.0),
+            components::ArmorRing::from_size(vector![2.0, 0.5], 1, 8, 6.5, TAU / 12.0),
+        ],
+        Some(controller::EntityController {
+            targets: Vec::new(),
+            motion: Some(controller::MotionController::Computer(
+                computer_controller::ComputerMotionController {
+                    speed: 18.0,
+                    kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
+                        distance: 0.0..25.0,
+                    },
+                },
+            )),
+            shooting: Some(controller::ShootingController::Computer(
+                computer_controller::ComputerShootingController {
+                    weapon: Weapon {
+                        initial_speed: 48.0 * 5.0,
+                        speed_exponent: 1.0 / 10.0,
+                        cooldown: 0.5,
+                        projectiles_per_shot: 1,
+                        projectile_angle: 0.0,
+                        innacuracy: TAU / 32.0,
+                        sight_kind: SightKind::Arrow,
+                    },
+                    aim: None,
+                    cooldown: 0.0,
+                    aiming_lead: 3.0,
+                    lead_weight: 0.0,
+                },
+            )),
+        }),
+        controller::Team::Hostile,
+    )
+}
+
+// strategy: keep distance or just don't aggro it
+pub fn neutral(position: Point2<f32>) -> Entity {
+    entity::Entity::from_rings(
+        position,
         Color::from_hex(0x00ff00),
         components::Center::from_size(vector![2.0, 2.0], 8, TAU / 6.0),
         vec![
@@ -109,7 +178,7 @@ async fn main() {
                 computer_controller::ComputerMotionController {
                     speed: 10.0,
                     kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 48.0..64.0,
+                        distance: 40.0..56.0,
                     },
                 },
             )),
@@ -132,21 +201,5 @@ async fn main() {
             )),
         }),
         controller::Team::Neutral,
-    ));
-
-    macroquad::input::show_mouse(false);
-
-    let mut fullscreen = START_IN_FULLSCREEN;
-
-    loop {
-        if macroquad::input::is_key_pressed(KeyCode::F11) {
-            fullscreen ^= true;
-            set_fullscreen(fullscreen);
-        }
-
-        app.update();
-        app.draw();
-
-        next_frame().await;
-    }
+    )
 }
