@@ -54,11 +54,11 @@ async fn main() {
         controller::Team::Player,
     ));
 
-    app.entities.insert(sniper(point![96.0, 48.0]));
+    // app.entities.insert(sniper(point![96.0, 48.0]));
 
     app.entities.insert(berzerker(point![96.0, -48.0]));
 
-    app.entities.insert(neutral(point![-96.0, 0.0]));
+    // app.entities.insert(neutral(point![-96.0, 0.0]));
 
     macroquad::input::show_mouse(false);
 
@@ -145,10 +145,10 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                     weapon: Weapon {
                         initial_speed: 48.0 * 5.0,
                         speed_exponent: 1.0 / 10.0,
-                        cooldown: 0.25,
+                        cooldown: 0.5,
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
-                        innacuracy: TAU / 128.0,
+                        innacuracy: TAU / 64.0,
                         sight_kind: SightKind::Arrow,
                     },
                     aim: None,
