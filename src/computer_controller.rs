@@ -47,7 +47,7 @@ impl ComputerMotionController {
                 tangential_weight,
             } => {
                 let perpendicular = tangential_weight * vector![-direction.y, direction.x];
-                let radial = direction * (distance_to_target - distance);
+                let radial = direction * (distance_to_target_edge - distance);
 
                 entity.velocity = self.speed * (perpendicular + radial).normalize();
             }
