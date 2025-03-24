@@ -104,12 +104,28 @@ impl ComputerShootingController {
 
         let target = &app.entities[target_index];
 
-        let lead_amount = if self.aiming_lead != 0.0 {
-            let muzzle_length = entity.radius + 4.0;
-            let muzzle_distance = distance_squared.sqrt() - muzzle_length;
+        let muzzle_length = entity.radius + 4.0;
 
-            let expected_time_to_target =
-                ((muzzle_distance + self.lead_weight) * 50.0f32.ln() / 48.0).log(50.0);
+        let lead_amount = if self.aiming_lead != 0.0 {
+            let muzzle_distance = distance_squared.sqrt() + self.lead_weight - muzzle_length;
+
+            let expected_time_to_target = if self.weapon.speed_exponent == 1.0 {
+                muzzle_distance / self.weapon.initial_speed
+            } else {
+                let maximum_distance =
+                    0.9 * -self.weapon.initial_speed / self.weapon.speed_exponent.ln();
+
+                let muzzle_distance =
+                    if self.weapon.speed_exponent < 1.0 && muzzle_distance > maximum_distance {
+                        maximum_distance
+                    } else {
+                        muzzle_distance
+                    };
+
+                (muzzle_distance * self.weapon.speed_exponent.ln() / self.weapon.initial_speed
+                    + 1.0)
+                    .log(self.weapon.speed_exponent)
+            };
 
             expected_time_to_target * target.velocity * self.aiming_lead
         } else {
@@ -141,7 +157,7 @@ impl ComputerShootingController {
                     self.weapon.speed_exponent,
                     nudged_aim,
                     entity.position,
-                    entity.radius + 4.0,
+                    muzzle_length,
                     entity.color,
                     entity.team,
                     index,
