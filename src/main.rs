@@ -120,7 +120,7 @@ pub fn sniper(position: Point2<f32>) -> Entity {
     )
 }
 
-// strategy: circle around
+// strategy: keep distance or circle around
 pub fn berzerker(position: Point2<f32>) -> Entity {
     entity::Entity::from_rings(
         position,
@@ -145,16 +145,16 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                     weapon: Weapon {
                         initial_speed: 48.0 * 5.0,
                         speed_exponent: 1.0 / 10.0,
-                        cooldown: 1.0,
+                        cooldown: 0.25,
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
-                        innacuracy: TAU / 32.0,
+                        innacuracy: TAU / 128.0,
                         sight_kind: SightKind::Arrow,
                     },
                     aim: None,
                     cooldown: 0.0,
-                    aiming_lead: 3.0,
-                    lead_weight: 0.0,
+                    aiming_lead: 2.0,
+                    lead_weight: 5.0,
                 },
             )),
         }),
