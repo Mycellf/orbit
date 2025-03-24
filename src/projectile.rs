@@ -94,6 +94,9 @@ impl Projectile {
     }
 
     pub fn draw(&self) {
+        const FADE_IN_TIME: f32 = 0.25;
+        const FADE_OUT_TIME: f32 = 0.1;
+
         draw_rectangle_ex(
             self.position.x,
             self.position.y,
@@ -103,8 +106,10 @@ impl Projectile {
                 offset: vec2(1.0, 0.5),
                 rotation: self.angle.angle(),
                 color: Color {
-                    a: if self.age < 0.25 {
-                        self.age / 0.25
+                    a: if self.age < FADE_IN_TIME {
+                        self.age / FADE_IN_TIME
+                    } else if self.age > self.lifetime - FADE_OUT_TIME {
+                        (self.lifetime - self.age) / FADE_OUT_TIME
                     } else {
                         1.0
                     },
