@@ -94,7 +94,7 @@ impl Projectile {
     }
 
     pub fn draw(&self) {
-        const FADE_IN_TIME: f32 = 0.25;
+        const FADE_IN_TIME: f32 = 0.1;
         const FADE_OUT_TIME: f32 = 0.1;
 
         draw_rectangle_ex(

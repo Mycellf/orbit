@@ -136,7 +136,7 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                 computer_controller::ComputerMotionController {
                     speed: 18.0,
                     kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 0.0..25.0,
+                        distance: 0.0..5.0,
                     },
                 },
             )),
@@ -144,17 +144,17 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                 computer_controller::ComputerShootingController {
                     weapon: Weapon {
                         initial_speed: 48.0 * 5.0,
-                        speed_exponent: 1.0 / 10.0,
+                        speed_exponent: 1.0 / 50.0,
                         cooldown: 0.5,
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
-                        innacuracy: TAU / 64.0,
+                        innacuracy: TAU / 32.0,
                         sight_kind: SightKind::Arrow,
                     },
                     aim: None,
                     cooldown: 0.0,
-                    aiming_lead: 2.0,
-                    lead_weight: 20.0,
+                    aiming_lead: 0.0,
+                    lead_weight: 0.0,
                 },
             )),
         }),
