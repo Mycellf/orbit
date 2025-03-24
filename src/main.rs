@@ -145,8 +145,8 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                     weapon: Weapon {
                         initial_speed: 48.0 * 5.0,
                         speed_exponent: 1.0 / 50.0,
-                        cooldown: 0.5,
-                        projectiles_per_shot: 1,
+                        cooldown: 1.0,
+                        projectiles_per_shot: 2,
                         projectile_angle: 0.0,
                         innacuracy: TAU / 32.0,
                         sight_kind: SightKind::Cross,
