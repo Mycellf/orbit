@@ -43,7 +43,7 @@ async fn main() {
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 8, -TAU / 6.0),
         vec![
-            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 3.5, TAU / 12.0),
+            components::ArmorRing::from_size(vector![4.0, 1.0], 8, 4, 3.5, TAU / 12.0),
             // *A gift to rustfmt to keep it from messing this code up*
         ],
         Some(controller::EntityController {
