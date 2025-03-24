@@ -14,7 +14,7 @@ pub struct ComputerMotionController {
 
 impl ComputerMotionController {
     pub fn update(&mut self, entity: &mut Entity, targets: &mut Vec<Index>, app: &mut App) {
-        let Some((_, displacement, distance_squared)) =
+        let Some((target_index, displacement, distance_squared)) =
             closest_target(targets.iter(), entity.position, app)
         else {
             entity.velocity = [0.0; 2].into();
@@ -23,6 +23,7 @@ impl ComputerMotionController {
         };
 
         let distance_to_target = distance_squared.sqrt();
+        let distance_to_target_edge = distance_to_target - app.entities[target_index].radius;
         let direction = displacement / distance_to_target;
 
         match self.kind {
@@ -33,9 +34,9 @@ impl ComputerMotionController {
                         end: max_distance,
                     },
             } => {
-                if distance_to_target < min_distance {
+                if distance_to_target_edge < min_distance {
                     entity.velocity = self.speed * -direction;
-                } else if distance_to_target > max_distance {
+                } else if distance_to_target_edge > max_distance {
                     entity.velocity = self.speed * direction;
                 } else {
                     entity.velocity = vector![0.0, 0.0];
