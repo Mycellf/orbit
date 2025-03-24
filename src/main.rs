@@ -197,7 +197,7 @@ pub fn neutral(position: Point2<f32>) -> Entity {
                     aim: None,
                     cooldown: 0.0,
                     aiming_lead: 0.5,
-                    lead_weight: 10.0,
+                    lead_weight: 0.0,
                 },
             )),
         }),
