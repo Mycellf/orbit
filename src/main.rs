@@ -19,10 +19,12 @@ pub mod collision;
 pub mod input;
 pub mod util;
 
+const START_IN_FULLSCREEN: bool = true;
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "Orbit".to_owned(),
-        fullscreen: true,
+        fullscreen: START_IN_FULLSCREEN,
         ..Default::default()
     }
 }
@@ -132,9 +134,16 @@ async fn main() {
         controller::Team::Neutral,
     ));
 
-    show_mouse(false);
+    macroquad::input::show_mouse(false);
+
+    let mut fullscreen = START_IN_FULLSCREEN;
 
     loop {
+        if macroquad::input::is_key_pressed(KeyCode::F11) {
+            fullscreen ^= true;
+            set_fullscreen(fullscreen);
+        }
+
         app.update();
         app.draw();
 
