@@ -149,8 +149,9 @@ impl ComputerShootingController {
             for i in 0..self.weapon.projectiles_per_shot {
                 let angle = start_angle + i as f32 * self.weapon.projectile_angle;
 
-                let nudged_aim =
-                    UnitComplex::new(angle + rand::gen_range(-1.0, 1.0) * self.weapon.innacuracy);
+                let nudged_aim = UnitComplex::new(
+                    angle + rand::gen_range(-1.0, 1.0) * self.weapon.projectile_spread,
+                );
 
                 app.insert_projectile(
                     self.weapon.initial_speed,
@@ -197,7 +198,7 @@ pub struct Weapon {
     pub cooldown: f32,
     pub projectiles_per_shot: usize,
     pub projectile_angle: f32,
-    pub innacuracy: f32,
+    pub projectile_spread: f32,
     pub sight_kind: SightKind,
 }
 
