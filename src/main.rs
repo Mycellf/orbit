@@ -179,7 +179,7 @@ pub fn neutral(position: Point2<f32>) -> Entity {
                 computer_controller::ComputerMotionController {
                     speed: 10.0,
                     kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 32.0..48.0,
+                        distance: 32.0..40.0,
                     },
                 },
             )),
