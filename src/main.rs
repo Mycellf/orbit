@@ -35,7 +35,7 @@ async fn main() {
 
     // Blue player entity
     app.entities.insert(entity::Entity::from_rings(
-        point![-64.0, -16.0],
+        point![-64.0, 0.0],
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 8, -TAU / 6.0),
         vec![
@@ -52,7 +52,7 @@ async fn main() {
 
     // Red entity
     app.entities.insert(entity::Entity::from_rings(
-        point![64.0, 16.0],
+        point![48.0, 48.0],
         Color::from_hex(0xff0000),
         components::Center::from_size(vector![2.0, 2.0], 8, TAU / 6.0),
         vec![
