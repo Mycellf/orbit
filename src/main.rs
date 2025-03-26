@@ -174,6 +174,41 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
     )
 }
 
+pub fn turret_platform(position: Point2<f32>) -> Entity {
+    entity::Entity::from_rings(
+        position,
+        Color::from_hex(0xff0000),
+        components::Center::from_size(vector![4.0, 4.0], 32, TAU / 6.0),
+        vec![
+            components::ArmorRing::from_size(vector![4.0, 1.0], 4, 4, 4.5, -TAU / 12.0),
+            components::ArmorRing::from_size(vector![16.0, 2.0], 32, 2, 8.0, TAU / 24.0),
+        ],
+        Some(controller::EntityController {
+            targets: Vec::new(),
+            motion: None,
+            shooting: Some(controller::ShootingController::Computer(
+                computer_controller::ComputerShootingController {
+                    weapon: Weapon {
+                        initial_speed: 48.0,
+                        speed_exponent: 50.0,
+                        cooldown: 0.1,
+                        projectiles_per_shot: 1,
+                        projectile_angle: 0.0,
+                        projectile_spread: TAU / 16.0,
+                        sight_kind: SightKind::Arrow,
+                        sight_size: 2.0,
+                    },
+                    aim: None,
+                    cooldown: 0.0,
+                    aiming_lead: 0.0,
+                    lead_weight: 0.0,
+                },
+            )),
+        }),
+        controller::Team::Hostile,
+    )
+}
+
 // strategy: keep distance or just don't aggro it
 pub fn neutral(position: Point2<f32>) -> Entity {
     entity::Entity::from_rings(
