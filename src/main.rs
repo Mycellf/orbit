@@ -136,7 +136,7 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                 computer_controller::ComputerMotionController {
                     speed: 18.0,
                     kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 0.0..5.0,
+                        distance: 5.0..10.0,
                     },
                 },
             )),
