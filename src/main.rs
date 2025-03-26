@@ -39,7 +39,7 @@ async fn main() {
 
     // Blue player entity
     app.entities.insert(entity::Entity::from_rings(
-        point![-32.0, 0.0],
+        point![-64.0, 0.0],
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 16, -TAU / 6.0),
         vec![
@@ -54,16 +54,16 @@ async fn main() {
         controller::Team::Player,
     ));
 
-    // app.entities.insert(sniper(point![128.0, 16.0]));
-    // app.entities.insert(sniper(point![128.0, -16.0]));
-    //
-    // app.entities.insert(berzerker(point![96.0, 32.0]));
-    // app.entities.insert(berzerker(point![96.0, 0.0]));
-    // app.entities.insert(berzerker(point![96.0, -32.0]));
+    app.entities.insert(sniper(point![96.0, 16.0]));
+    app.entities.insert(sniper(point![96.0, -16.0]));
 
-    app.entities.insert(neutral(point![-96.0, 0.0]));
+    app.entities.insert(berzerker(point![64.0, 32.0]));
+    app.entities.insert(berzerker(point![64.0, 0.0]));
+    app.entities.insert(berzerker(point![64.0, -32.0]));
 
-    app.entities.insert(turret_platform(point![0.0, -96.0]));
+    app.entities.insert(turret_platform(point![128.0, 0.0]));
+
+    app.entities.insert(neutral(point![-128.0, 0.0]));
 
     macroquad::input::show_mouse(false);
 
