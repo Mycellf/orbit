@@ -54,17 +54,18 @@ impl Entity {
     }
 
     pub fn draw_sight(&self) -> Option<()> {
-        let (aim, cooldown, sight_kind) = &self.controller.as_ref()?.shooting.as_ref()?.aim()?;
+        let (aim, cooldown, sight_kind, sight_size) =
+            &self.controller.as_ref()?.shooting.as_ref()?.aim()?;
 
         match sight_kind {
             SightKind::Arrow => {
-                let radius = self.radius + 4.0 - 1.5 * cooldown;
+                let radius = self.radius + 4.0 * sight_size - 1.5 * cooldown;
 
                 draw_rectangle_ex(
                     self.position.x + radius * aim.re,
                     self.position.y + radius * aim.im,
-                    2.0,
-                    0.75,
+                    2.0 * sight_size,
+                    0.75 * sight_size,
                     DrawRectangleParams {
                         offset: vec2(1.0, 0.0),
                         rotation: aim.angle() + TAU / 8.0,
@@ -74,8 +75,8 @@ impl Entity {
                 draw_rectangle_ex(
                     self.position.x + radius * aim.re,
                     self.position.y + radius * aim.im,
-                    0.75,
-                    2.0,
+                    0.75 * sight_size,
+                    2.0 * sight_size,
                     DrawRectangleParams {
                         offset: vec2(1.0, 0.0),
                         rotation: aim.angle() + TAU / 8.0,
@@ -89,8 +90,8 @@ impl Entity {
                 draw_rectangle_ex(
                     self.position.x + radius * aim.re,
                     self.position.y + radius * aim.im,
-                    2.75,
-                    0.75,
+                    2.75 * sight_size,
+                    0.75 * sight_size,
                     DrawRectangleParams {
                         offset: vec2(1.0, 0.5),
                         rotation: aim.angle(),
@@ -100,8 +101,8 @@ impl Entity {
                 draw_rectangle_ex(
                     self.position.x + radius * aim.re,
                     self.position.y + radius * aim.im,
-                    0.75,
-                    2.75,
+                    0.75 * sight_size,
+                    2.75 * sight_size,
                     DrawRectangleParams {
                         offset: vec2(1.0, 0.5),
                         rotation: aim.angle(),

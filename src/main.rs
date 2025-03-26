@@ -54,14 +54,16 @@ async fn main() {
         controller::Team::Player,
     ));
 
-    app.entities.insert(sniper(point![128.0, 16.0]));
-    app.entities.insert(sniper(point![128.0, -16.0]));
-
-    app.entities.insert(berzerker(point![96.0, 32.0]));
-    app.entities.insert(berzerker(point![96.0, 0.0]));
-    app.entities.insert(berzerker(point![96.0, -32.0]));
+    // app.entities.insert(sniper(point![128.0, 16.0]));
+    // app.entities.insert(sniper(point![128.0, -16.0]));
+    //
+    // app.entities.insert(berzerker(point![96.0, 32.0]));
+    // app.entities.insert(berzerker(point![96.0, 0.0]));
+    // app.entities.insert(berzerker(point![96.0, -32.0]));
 
     app.entities.insert(neutral(point![-96.0, 0.0]));
+
+    app.entities.insert(turret_platform(point![0.0, -96.0]));
 
     macroquad::input::show_mouse(false);
 
@@ -111,6 +113,7 @@ pub fn sniper(position: Point2<f32>) -> Entity {
                         projectile_angle: 0.0,
                         projectile_spread: 0.0,
                         sight_kind: SightKind::Arrow,
+                        sight_size: 1.0,
                     },
                     aim: None,
                     cooldown: 0.0,
@@ -158,6 +161,7 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
                         projectile_angle: 0.0,
                         projectile_spread: TAU / 32.0,
                         sight_kind: SightKind::Cross,
+                        sight_size: 1.0,
                     },
                     aim: None,
                     cooldown: 0.0,
@@ -201,6 +205,7 @@ pub fn neutral(position: Point2<f32>) -> Entity {
                         projectile_angle: TAU / 32.0 / 9.0,
                         projectile_spread: 0.0,
                         sight_kind: SightKind::Cross,
+                        sight_size: 1.0,
                     },
                     aim: None,
                     cooldown: 0.0,
