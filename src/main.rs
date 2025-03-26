@@ -38,7 +38,7 @@ async fn main() {
     let mut app = app::App::from_ups(120.0);
 
     // Blue player entity
-    app.entities.insert(entity::Entity::from_rings(
+    let player_index = app.entities.insert(entity::Entity::from_rings(
         point![-64.0, 0.0],
         Color::from_hex(0x0000ff),
         components::Center::from_size(vector![2.0, 2.0], 16, -TAU / 6.0),
@@ -73,6 +73,20 @@ async fn main() {
         if macroquad::input::is_key_pressed(KeyCode::F11) {
             fullscreen ^= true;
             set_fullscreen(fullscreen);
+        }
+
+        if macroquad::input::is_key_pressed(KeyCode::O) {
+            for (_, entity) in &mut app.entities {
+                let controller::Team::Hostile = entity.team else {
+                    continue;
+                };
+
+                let Some(controller) = &mut entity.controller else {
+                    continue;
+                };
+
+                controller.alert(player_index);
+            }
         }
 
         app.update();
