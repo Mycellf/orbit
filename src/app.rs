@@ -29,7 +29,7 @@ impl App {
         let last_frame = Instant::now();
         let frame_time = 0.0;
         let camera = Camera2D {
-            zoom: Vec2::splat(1.0 / 64.0),
+            zoom: Vec2::splat(1.0 / 96.0),
             ..Default::default()
         };
         let camera_control = CameraControl::Manual {
