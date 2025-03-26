@@ -41,7 +41,7 @@ async fn main() {
     app.entities.insert(entity::Entity::from_rings(
         point![-32.0, 0.0],
         Color::from_hex(0x0000ff),
-        components::Center::from_size(vector![2.0, 2.0], 8, -TAU / 6.0),
+        components::Center::from_size(vector![2.0, 2.0], 16, -TAU / 6.0),
         vec![
             components::ArmorRing::from_size(vector![4.0, 1.0], 8, 4, 3.5, TAU / 12.0),
             // *A gift to rustfmt to keep it from messing this code up*
