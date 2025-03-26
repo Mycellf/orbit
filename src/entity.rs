@@ -1,3 +1,5 @@
+use std::f32::consts::TAU;
+
 use crate::{
     app::App,
     components::{ArmorRing, Center},
@@ -43,81 +45,73 @@ impl Entity {
     }
 
     pub fn draw(&self) {
-        use std::f32::consts::TAU;
-
         self.center.draw_around(self.position, WHITE);
         for ring in &*self.rings {
             ring.draw_around(self.position, self.color);
         }
 
-        'draw_sight: {
-            let Some(controller) = &self.controller else {
-                break 'draw_sight;
-            };
+        self.draw_sight();
+    }
 
-            let Some(controller) = &controller.shooting else {
-                break 'draw_sight;
-            };
+    pub fn draw_sight(&self) -> Option<()> {
+        let (aim, cooldown, sight_kind) = &self.controller.as_ref()?.shooting.as_ref()?.aim()?;
 
-            let Some((aim, cooldown, sight_kind)) = controller.aim() else {
-                break 'draw_sight;
-            };
+        match sight_kind {
+            SightKind::Arrow => {
+                let radius = self.radius + 4.0 - 1.5 * cooldown;
 
-            match sight_kind {
-                SightKind::Arrow => {
-                    let radius = self.radius + 4.0 - 1.5 * cooldown;
+                draw_rectangle_ex(
+                    self.position.x + radius * aim.re,
+                    self.position.y + radius * aim.im,
+                    2.0,
+                    0.75,
+                    DrawRectangleParams {
+                        offset: vec2(1.0, 0.0),
+                        rotation: aim.angle() + TAU / 8.0,
+                        color: self.color,
+                    },
+                );
+                draw_rectangle_ex(
+                    self.position.x + radius * aim.re,
+                    self.position.y + radius * aim.im,
+                    0.75,
+                    2.0,
+                    DrawRectangleParams {
+                        offset: vec2(1.0, 0.0),
+                        rotation: aim.angle() + TAU / 8.0,
+                        color: self.color,
+                    },
+                );
+            }
+            SightKind::Cross => {
+                let radius = self.radius + 5.0 - 1.5 * cooldown;
 
-                    draw_rectangle_ex(
-                        self.position.x + radius * aim.re,
-                        self.position.y + radius * aim.im,
-                        2.0,
-                        0.75,
-                        DrawRectangleParams {
-                            offset: vec2(1.0, 0.0),
-                            rotation: aim.angle() + TAU / 8.0,
-                            color: self.color,
-                        },
-                    );
-                    draw_rectangle_ex(
-                        self.position.x + radius * aim.re,
-                        self.position.y + radius * aim.im,
-                        0.75,
-                        2.0,
-                        DrawRectangleParams {
-                            offset: vec2(1.0, 0.0),
-                            rotation: aim.angle() + TAU / 8.0,
-                            color: self.color,
-                        },
-                    );
-                }
-                SightKind::Cross => {
-                    let radius = self.radius + 5.0 - 1.5 * cooldown;
-
-                    draw_rectangle_ex(
-                        self.position.x + radius * aim.re,
-                        self.position.y + radius * aim.im,
-                        2.75,
-                        0.75,
-                        DrawRectangleParams {
-                            offset: vec2(1.0, 0.5),
-                            rotation: aim.angle(),
-                            color: self.color,
-                        },
-                    );
-                    draw_rectangle_ex(
-                        self.position.x + radius * aim.re,
-                        self.position.y + radius * aim.im,
-                        0.75,
-                        2.75,
-                        DrawRectangleParams {
-                            offset: vec2(1.0, 0.5),
-                            rotation: aim.angle(),
-                            color: self.color,
-                        },
-                    );
-                }
+                draw_rectangle_ex(
+                    self.position.x + radius * aim.re,
+                    self.position.y + radius * aim.im,
+                    2.75,
+                    0.75,
+                    DrawRectangleParams {
+                        offset: vec2(1.0, 0.5),
+                        rotation: aim.angle(),
+                        color: self.color,
+                    },
+                );
+                draw_rectangle_ex(
+                    self.position.x + radius * aim.re,
+                    self.position.y + radius * aim.im,
+                    0.75,
+                    2.75,
+                    DrawRectangleParams {
+                        offset: vec2(1.0, 0.5),
+                        rotation: aim.angle(),
+                        color: self.color,
+                    },
+                );
             }
         }
+
+        Some(())
     }
 
     pub fn update(&mut self, index: Index, delta_seconds: f32, app: &mut App) {
