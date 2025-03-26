@@ -91,10 +91,10 @@ pub fn sniper(position: Point2<f32>) -> Entity {
             targets: Vec::new(),
             motion: Some(controller::MotionController::Computer(
                 computer_controller::ComputerMotionController {
-                    speed: 18.0,
+                    speed: rand::gen_range(17.0, 19.0),
                     kind: computer_controller::ComputerMotionControllerKind::Circle {
-                        distance: 50.0,
-                        tangential_weight: -25.0,
+                        distance: rand::gen_range(45.0, 50.0),
+                        tangential_weight: rand::gen_range(-50.0, 50.0),
                     },
                 },
             )),
@@ -134,9 +134,14 @@ pub fn berzerker(position: Point2<f32>) -> Entity {
             targets: Vec::new(),
             motion: Some(controller::MotionController::Computer(
                 computer_controller::ComputerMotionController {
-                    speed: 18.0,
+                    speed: rand::gen_range(17.0, 19.0),
                     kind: computer_controller::ComputerMotionControllerKind::KeepDistance {
-                        distance: 5.0..10.0,
+                        distance: {
+                            let start = rand::gen_range(0.0, 5.0);
+                            let tolerance = rand::gen_range(0.0, 10.0);
+
+                            start..start + tolerance
+                        },
                     },
                 },
             )),
