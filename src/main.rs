@@ -189,8 +189,8 @@ pub fn turret_platform(position: Point2<f32>) -> Entity {
             shooting: Some(controller::ShootingController::Computer(
                 computer_controller::ComputerShootingController {
                     weapon: Weapon {
-                        initial_speed: 48.0,
-                        speed_exponent: 50.0,
+                        initial_speed: 48.0 * 15.0,
+                        speed_exponent: 1.0 / 50.0,
                         cooldown: 0.1,
                         projectiles_per_shot: 1,
                         projectile_angle: 0.0,
